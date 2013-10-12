@@ -11,7 +11,8 @@ public class Processor : MonoBehaviour {
 	protected Dictionary<int, cellProcessor> layerProcessors = new Dictionary<int, cellProcessor> {
 		{0, SunLight.Process},
 		{1, Topography.Process},
-		{2, Water.Process}
+		{2, Water.Process},
+		{3, Grass.Process}
 	};
 	
 	protected void Process() {

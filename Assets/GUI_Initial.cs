@@ -5,7 +5,7 @@ public class GUI_Initial : MonoBehaviour {
 	
 	public const int TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3;
 	
-	protected string[] layerToolbarNames = {"Sun", "Topo", "Water"};
+	protected string[] layerToolbarNames = {"Sun", "Topo", "Water", "Grass"};
 	protected int layerSelectorSelection, layerSelectorLocation, layerSelectorMinWidth, layerSelectorMinHeight, layerSelectorNumColumns;
 	protected int hoverRectPadding, edgePadding;
 	protected string textAreaString;
@@ -41,8 +41,6 @@ public class GUI_Initial : MonoBehaviour {
 		}
 		
 		BoxManager.DisplayLayer = layerSelectorSelection;
-		
-		print (textAreaString);
 	}
 	
 	void OnGUI() {
