@@ -9,7 +9,8 @@ public class Processor : MonoBehaviour {
 	protected delegate byte cellProcessor (byte val, int x, int y);
 	
 	protected Dictionary<int, cellProcessor> layerProcessors = new Dictionary<int, cellProcessor> {
-		{0, new Conway(){Layer = 0}.Process}
+		{0, new Conway(){Layer = 0}.Process},
+		{1, Topography.Process}
 	};
 	
 	protected PerFrame perFrame;

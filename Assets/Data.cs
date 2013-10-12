@@ -5,7 +5,7 @@ using System.Threading;
 public class Data : MonoBehaviour {
 	protected int width = 30;
 	protected int height = 30;
-	protected int depth = 1;
+	protected int depth = 2;
 	
 	protected bool parity;
 	protected byte[] data1;
@@ -45,9 +45,6 @@ public class Data : MonoBehaviour {
 		data1 = new byte[width * height * depth];
 		data2 = new byte[width * height * depth];
 		singleton = this;
-		this[0, 1, 0] = (byte)1;
-		this[1, 1, 0] = (byte)1;
-		this[2, 1, 0] = (byte)1;
 	}
 	
 	public static void Flip() {

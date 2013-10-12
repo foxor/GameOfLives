@@ -30,6 +30,7 @@ public class BoxManager : MonoBehaviour {
 	
 	public void Awake() {
 		singleton = this;
+		displayLayer = 1;
 	}
 	
 	public void Start() {
@@ -61,17 +62,11 @@ public class BoxManager : MonoBehaviour {
 		}
 	}
 	
-	protected Color getColor(byte val) {
-		if (val == 1) {
-			return Color.yellow;
-		}
-		return Color.grey;
-	}
-	
 	public void Update() {
 		for (int x = 0; x < Data.Width; x++) {
 			for (int y = 0; y < Data.Height; y++) {
-				this[x, y].renderer.material.color = getColor(Data.Singleton[x, y, displayLayer]);
+				this[x, y].renderer.material.color = 
+					ColorManager.Convert(Data.Singleton[x, y, displayLayer], displayLayer);
 			}
 		}
 	}
