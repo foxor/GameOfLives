@@ -1,8 +1,10 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
+using System.Threading;
 
 public class BoxManager : MonoBehaviour {
-	protected static GameObject prefab = (GameObject)Resources.Load("Cube");
+	protected static GameObject prefab;
 	
 	protected int displayLayer;
 	public static int DisplayLayer {
@@ -14,6 +16,16 @@ public class BoxManager : MonoBehaviour {
 		}
 	}
 	
+	protected GameObject[] cubes;
+	protected GameObject this[int x, int y] {
+		get {
+			return cubes[x + y * Data.Width];
+		}
+		set {
+			cubes[x + y * Data.Width] = value;
+		}
+	}
+	
 	protected static BoxManager singleton;
 	
 	public void Awake() {
@@ -21,6 +33,8 @@ public class BoxManager : MonoBehaviour {
 	}
 	
 	public void Start() {
+		prefab = (GameObject)Resources.Load("Cube");
+		cubes = new GameObject[Data.Width * Data.Height];
 		float cameraHeight = Camera.main.orthographicSize * 2f;
 		float cameraWidth = cameraHeight * Camera.main.aspect;
 		float widthSpan =  cameraWidth / ((float)Data.Width);
@@ -42,6 +56,22 @@ public class BoxManager : MonoBehaviour {
 				cube.transform.localScale = localScale;
 				cube.transform.parent = transform;
 				cube.renderer.material.color = Color.blue;
+				this[x, y] = cube;
+			}
+		}
+	}
+	
+	protected Color getColor(byte val) {
+		if (val == 1) {
+			return Color.yellow;
+		}
+		return Color.grey;
+	}
+	
+	public void Update() {
+		for (int x = 0; x < Data.Width; x++) {
+			for (int y = 0; y < Data.Height; y++) {
+				this[x, y].renderer.material.color = getColor(Data.Singleton[x, y, displayLayer]);
 			}
 		}
 	}
