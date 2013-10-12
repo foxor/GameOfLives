@@ -30,7 +30,7 @@ public class BoxManager : MonoBehaviour {
 	
 	public void Awake() {
 		singleton = this;
-		displayLayer = 1;
+		displayLayer = 2;
 	}
 	
 	public void Start() {

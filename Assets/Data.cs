@@ -5,7 +5,7 @@ using System.Threading;
 public class Data : MonoBehaviour {
 	protected int width = 30;
 	protected int height = 30;
-	protected int depth = 2;
+	protected int depth = 3;
 	
 	protected bool parity;
 	protected byte[] data1;
@@ -51,7 +51,7 @@ public class Data : MonoBehaviour {
 		singleton.parity ^= true;
 	}
 	
-	public bool boundsOk(int x, int y, int z) {
+	public static bool boundsOk(int x, int y, int z) {
 		if (x < 0 || x >= Width || y < 0 || y >= Height || z < 0 || z >= Height) {
 			return false;
 		}
@@ -67,6 +67,13 @@ public class Data : MonoBehaviour {
 				data[x + y * width + z * width * height] = value;
 			}
 		}
+	}
+	
+	public byte getNext(int x, int y, int z) {
+		if (boundsOk(x, y, z)) {
+			return (parity ? data2 : data1)[x + y * width + z * width * height];
+		}
+		return (byte)0;
 	}
 	
 	public void setNext(int x, int y, int z, byte val) {
