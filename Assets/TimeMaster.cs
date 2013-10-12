@@ -3,7 +3,7 @@ using System.Collections;
 
 public class TimeMaster {
 	
-	public const uint FRAMES_PER_DAY = 100;
+	public const uint FRAMES_PER_DAY = 1000;
 	
 	private uint frameCount = 0;
 	

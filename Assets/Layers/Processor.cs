@@ -12,14 +12,7 @@ public class Processor : MonoBehaviour {
 		{0, new Conway(){Layer = 0}.Process}
 	};
 	
-	protected bool isDead;
-	protected IEnumerator LockManager() {
-		while (!isDead) {
-			Process();
-			Data.Flip();
-			yield return 0;
-		}
-	}
+	protected PerFrame perFrame;
 	
 	protected void Process() {
 		for (int x = 0; x < Data.Width; x++) {
@@ -34,6 +27,12 @@ public class Processor : MonoBehaviour {
 	}
 	
 	public void Start() {
-		StartCoroutine(LockManager());
+		perFrame = new PerFrame();
+	}
+	
+	public void Update() {
+		perFrame.Tick();
+		Process();
+		Data.Flip();
 	}
 }
