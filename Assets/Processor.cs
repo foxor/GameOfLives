@@ -9,7 +9,7 @@ public class Processor : MonoBehaviour {
 	protected delegate byte cellProcessor (byte val, int x, int y);
 	
 	protected Dictionary<int, cellProcessor> layerProcessors = new Dictionary<int, cellProcessor> {
-		{0, Conway}
+		{0, new Conway(){Layer = 0}.Process}
 	};
 	
 	protected bool isDead;
@@ -35,13 +35,5 @@ public class Processor : MonoBehaviour {
 	
 	public void Start() {
 		StartCoroutine(LockManager());
-	}
-	
-	protected static byte Conway(byte val, int x, int y) {
-		byte neighbors =  Data.Singleton.sumNeighbors(x, y, 0);
-		int tooBig = ((neighbors & 4) >> 2) | ((neighbors & 8) >> 3);
-		int isThree = ((neighbors & 1) & ((neighbors & 2) >> 1)) & ~tooBig;
-		int tooSmall = (~tooBig & ~((neighbors & 2) >> 1)) & 1;
-		return (byte)((val & ~(tooBig | tooSmall)) | isThree);
 	}
 }

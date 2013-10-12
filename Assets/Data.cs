@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 
 public class Data : MonoBehaviour {
-	protected int width = 3;
-	protected int height = 3;
+	protected int width = 30;
+	protected int height = 30;
 	protected int depth = 1;
 	
 	protected bool parity;
