@@ -88,6 +88,6 @@ public class Data : MonoBehaviour {
 		sum += this[x - 1, y + 1, z];
 		sum += this[x, y + 1, z];
 		sum += this[x + 1, y + 1, z];
-		return (byte)Mathf.Clamp(0, 255, sum);
+		return (byte)Mathf.Clamp(255, 0, sum);
 	}
 }

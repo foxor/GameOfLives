@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -12,12 +13,11 @@ public class Processor : MonoBehaviour {
 	};
 	
 	protected bool isDead;
-	protected Thread lockManager;
-	protected void LockManager() {
+	protected IEnumerator LockManager() {
 		while (!isDead) {
 			Process();
 			Data.Flip();
-			Thread.Sleep(20);
+			yield return 0;
 		}
 	}
 	
@@ -34,26 +34,14 @@ public class Processor : MonoBehaviour {
 	}
 	
 	public void Start() {
-		lockManager = new Thread(new ThreadStart(LockManager));
-		lockManager.Start(this);
+		StartCoroutine(LockManager());
 	}
 	
 	protected static byte Conway(byte val, int x, int y) {
 		byte neighbors =  Data.Singleton.sumNeighbors(x, y, 0);
 		int tooBig = ((neighbors & 4) >> 2) | ((neighbors & 8) >> 3);
 		int isThree = ((neighbors & 1) & ((neighbors & 2) >> 1)) & ~tooBig;
-		int tooSmall = ~tooBig & ((neighbors & 2) >> 1);
-		return (byte)((val ^ (tooBig | tooSmall)) | isThree);
-	}
-	
-	public void OnApplicationExit() {
-		isDead = true;
-		Thread.Sleep(100);
-		try {
-			if (lockManager.IsAlive) {
-				lockManager.Abort();
-			}
-		}
-		catch (Exception e) {}
+		int tooSmall = (~tooBig & ~((neighbors & 2) >> 1)) & 1;
+		return (byte)((val & ~(tooBig | tooSmall)) | isThree);
 	}
 }
