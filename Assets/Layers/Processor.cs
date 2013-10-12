@@ -9,11 +9,10 @@ public class Processor : MonoBehaviour {
 	protected delegate byte cellProcessor (byte val, int x, int y);
 	
 	protected Dictionary<int, cellProcessor> layerProcessors = new Dictionary<int, cellProcessor> {
-		{0, new Conway(){Layer = 0}.Process},
-		{1, Topography.Process}
+		{0, SunLight.Process},
+		{1, Topography.Process},
+		{2, Water.Process}
 	};
-	
-	protected PerFrame perFrame;
 	
 	protected void Process() {
 		for (int x = 0; x < Data.Width; x++) {
@@ -27,12 +26,8 @@ public class Processor : MonoBehaviour {
 		}
 	}
 	
-	public void Start() {
-		perFrame = new PerFrame();
-	}
-	
 	public void Update() {
-		perFrame.Tick();
+		PerFrame.Tick();
 		Process();
 		Data.Flip();
 	}
