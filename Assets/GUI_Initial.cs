@@ -3,26 +3,31 @@ using System.Collections;
 
 public class GUI_Initial : MonoBehaviour {
 	
-	protected string[] testToolbarNames;
-	protected int testToolbarSelection;
+	public const int TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3;
+	
+	protected string[] layerToolbarNames = {"Sun", "Topo", "Water"};
+	protected int layerSelectorSelection, layerSelectorLocation, layerSelectorMinWidth, layerSelectorMinHeight, layerSelectorNumColumns;
+	protected int hoverRectPadding, edgePadding;
 	protected string textAreaString;
 	
-	protected Rect topToolbarRect,
-	               topHoverRect;
+	protected Rect layerSelectorRect;
+	protected Rect layerSelectorHoverRect;
 	
 	public int lastScreenWidth, lastScreenHeight;
 
 	// Use this for initialization
 	void Start () {
-		testToolbarNames = new string[4];
-		testToolbarNames[0] = "Layer 1";
-		testToolbarNames[1] = "Layer 2";
-		testToolbarNames[2] = "Layer 3";
-		testToolbarNames[3] = "Layer 4";
-		testToolbarSelection = 0;
-		
-		topToolbarRect = new Rect(5, 5, Screen.width - 10, 30);
-		topHoverRect = new Rect(0, 0, Screen.width, 40);
+			
+		hoverRectPadding = 5;
+		edgePadding = 5;
+			
+		layerSelectorSelection = 0;
+		layerSelectorLocation = LEFT;
+		layerSelectorMinWidth = 100;
+		layerSelectorMinHeight = 30;
+		layerSelectorNumColumns = (layerSelectorLocation == TOP || layerSelectorLocation == BOTTOM) ? layerToolbarNames.Length : 1;
+			
+		determineLayerToolbarRect();
 		
 		textAreaString = "";
 	}
@@ -35,6 +40,8 @@ public class GUI_Initial : MonoBehaviour {
 			resizeEvent();
 		}
 		
+		BoxManager.DisplayLayer = layerSelectorSelection;
+		
 		print (textAreaString);
 	}
 	
@@ -46,19 +53,55 @@ public class GUI_Initial : MonoBehaviour {
 		GUI.Label(new Rect(Screen.width - 100, Screen.height - 30, 100, 20), "W: " + Screen.width + ", H: " + Screen.height);
 		GUI.Label(new Rect(0, Screen.height - 30, 200, 20), "MX: " + mousePosition.x + ", MY: " + mousePosition.y);
 		
-		if (GUI.Button(new Rect(120, 120, 100, 100), "Hmmm")) {
-			print("Ouch!");
-		}
-		
-		textAreaString = GUI.TextArea(new Rect(200, 200, 100, 100), textAreaString);
-		
-		if (topHoverRect.Contains(mousePosition)) {
-			testToolbarSelection = GUI.Toolbar(topToolbarRect, testToolbarSelection, testToolbarNames);
+		if (layerSelectorHoverRect.Contains(mousePosition)) {
+			layerSelectorSelection = GUI.SelectionGrid(layerSelectorRect, layerSelectorSelection, layerToolbarNames, layerSelectorNumColumns);
 		}
 	}
 	
 	private void resizeEvent() {
-		topToolbarRect.Set(topToolbarRect.x, topToolbarRect.y, Screen.width - 10, topToolbarRect.height);
-		topHoverRect.Set(0, 0, Screen.width, 40);
+		determineLayerToolbarRect();
+	}
+		
+	private void determineLayerToolbarRect() {	
+		int x, y, w, h;
+		switch (layerSelectorLocation) {
+			case (TOP) : {
+				x = edgePadding;
+			 	y = edgePadding;
+				w = Screen.width - edgePadding*2;
+				h = layerSelectorMinHeight;
+				break;
+			}
+			case (RIGHT) : {
+				x = Screen.width - layerSelectorMinWidth - edgePadding;
+			 	y = edgePadding;
+				w = layerSelectorMinWidth;
+				h =	Screen.height - 2*edgePadding;
+				break;
+			}
+			case (BOTTOM) : {
+				x = edgePadding;
+			 	y = Screen.height - layerSelectorMinHeight - edgePadding;
+				w = Screen.width - edgePadding*2;
+				h =	layerSelectorMinHeight;
+				break;
+			}
+			case (LEFT) : {
+				x = edgePadding;
+			 	y = edgePadding;
+				w = layerSelectorMinWidth;
+				h =	Screen.height - 2*edgePadding;
+				break;
+			}
+			default : {
+				x = edgePadding;
+			 	y = edgePadding;
+				w = Screen.width - edgePadding*2;
+				h = layerSelectorMinHeight;
+				break;
+			}
+		}
+		layerSelectorRect.Set(x, y, w, h);
+		layerSelectorHoverRect.Set(x - hoverRectPadding, y - hoverRectPadding, w + hoverRectPadding*2, h + hoverRectPadding*2);
 	}
 }
