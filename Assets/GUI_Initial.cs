@@ -44,12 +44,8 @@ public class GUI_Initial : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		
 		Vector3 mousePosition = Input.mousePosition;
 		mousePosition.y = Screen.height - mousePosition.y;
-		
-		GUI.Label(new Rect(Screen.width - 100, Screen.height - 30, 100, 20), "W: " + Screen.width + ", H: " + Screen.height);
-		GUI.Label(new Rect(0, Screen.height - 30, 200, 20), "MX: " + mousePosition.x + ", MY: " + mousePosition.y);
 		
 		if (layerSelectorHoverRect.Contains(mousePosition)) {
 			layerSelectorSelection = GUI.SelectionGrid(layerSelectorRect, layerSelectorSelection, layerToolbarNames, layerSelectorNumColumns);

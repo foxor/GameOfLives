@@ -17,7 +17,7 @@ public class ColorManager : MonoBehaviour {
 			}
 			return Color.grey;
 		case 1:
-			return Color.Lerp(Color.grey, Color.red, ((float)val) / ((float)byte.MaxValue));
+			return Color.Lerp(Color.black, Color.white, ((float)val) / ((float)byte.MaxValue));
 		case 2:
 			return Color.Lerp(Color.grey, Color.blue, ((float)val) / ((float)byte.MaxValue));
 		case 3:
