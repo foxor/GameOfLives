@@ -64,8 +64,23 @@ public class BoxManager : MonoBehaviour {
 	public void Update() {
 		for (int x = 0; x < Data.Width; x++) {
 			for (int y = 0; y < Data.Height; y++) {
+				int bestLayer = 0;
+				int bestVal = 0;
+				byte bestValOrig = 0;
+				for (int z = 0; z < LayerManager.LayerDepth; z++) {
+					if (((1 << z) & displayLayer) == 0) {
+						continue;
+					}
+					byte orig = Data.Singleton[x, y, z];
+					int val = orig * (z + 1);
+					if (val > bestVal) {
+						bestLayer = z;
+						bestVal = val;
+						bestValOrig = orig;
+					}
+				}
 				this[x, y].renderer.material.color = 
-					ColorManager.Convert(Data.Singleton[x, y, displayLayer], displayLayer);
+					ColorManager.Convert(bestValOrig, bestLayer);
 			}
 		}
 	}

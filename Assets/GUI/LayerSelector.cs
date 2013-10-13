@@ -9,6 +9,17 @@ public class LayerSelector : MonoBehaviour {
 	protected const int MENU_WIDTH = 100;
 	
 	protected int layerSelectorSelection;
+	protected int LayerSelectorSelection {
+		get {
+			return layerSelectorSelection;
+		}
+		set {
+			if (value != layerSelectorSelection) {
+				layerSelectorSelection = value;
+				BoxManager.DisplayLayer ^= 1 << layerSelectorSelection;
+			}
+		}
+	}
 	
 	protected Rect layerSelectorRect;
 	protected Rect layerSelectorHoverRect;
@@ -25,8 +36,6 @@ public class LayerSelector : MonoBehaviour {
 			lastScreenHeight = Screen.height;
 			resizeEvent();
 		}
-		
-		BoxManager.DisplayLayer = layerSelectorSelection;
 	}
 	
 	void OnGUI() {
@@ -34,9 +43,9 @@ public class LayerSelector : MonoBehaviour {
 		mousePosition.y = Screen.height - mousePosition.y;
 		
 		if (layerSelectorHoverRect.Contains(mousePosition)) {
-			layerSelectorSelection = GUI.SelectionGrid(
+			LayerSelectorSelection = GUI.SelectionGrid(
 				layerSelectorRect, 
-				layerSelectorSelection, 
+				LayerSelectorSelection, 
 				LayerManager.Layers.Select(x => x.Name).ToArray(), 
 				1
 			);
