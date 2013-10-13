@@ -3,13 +3,15 @@ using System.Collections.Generic;
 
 public class Animal {
 	
-	public static int HABITAT_TERRESTRIAL = 0, HABITAT_AQUATIC = 1, HABITAT_AMPHIBIUS = 2;
-	public static int DIET_HERBIVOROUS = 0, DIET_CARNIVOROUS = 1, DIET_OMNIVOROUS = 2;
-	public static int HEALTH_CAP = 0xFF;
-	public static int NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3;
+	public const int TERRESTRIAL_FLAG = 1;
+	public const int AQUATIC_FLAG = 2;
+	
+	public const int HERBIVOR_FLAG = 1;
+	public const int CARNIVOR_FLAG = 2;
 	
 	public string name;
 	public Color color;
+	public int target_elevation;
 	public int habitat;
 	public int diet;
 	public int maxHealth;
@@ -31,19 +33,19 @@ public class Animal {
 	}
 	
 	public bool canSwim() {
-		return habitat == HABITAT_AQUATIC || habitat == HABITAT_AMPHIBIUS;
+		return (habitat | AQUATIC_FLAG) > 0;
 	}
 	
 	public bool canWalk() {
-		return habitat == HABITAT_AMPHIBIUS || habitat == HABITAT_TERRESTRIAL;
+		return (habitat | TERRESTRIAL_FLAG) > 0;
 	}
 	
 	public bool eatsPlant() {
-		return diet == DIET_HERBIVOROUS || diet == DIET_OMNIVOROUS;
+		return (diet | HERBIVOR_FLAG) > 0;
 	}
 	
 	public bool eatsMeat() {
-		return diet == DIET_OMNIVOROUS || diet == DIET_CARNIVOROUS;
+		return (diet | CARNIVOR_FLAG) > 0;
 	}
 	
 	protected int determineDirection() {
