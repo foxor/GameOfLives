@@ -107,11 +107,6 @@ public class Animal {
 		int yMin = y - 1;
 		int yMax = y + 1;
 		
-		float roll = Random.Range(0f, 1f);
-		if (roll > Activity) {
-			return false;
-		}
-		
 		for (int xPos = xMin; xPos <= xMax; xPos++) {
 			for (int yPos = yMin; yPos <= yMax; yPos++) {
 				int pos = posClamp(xPos, yPos);
@@ -141,6 +136,14 @@ public class Animal {
 				}
 			}
 		}
+		
+		if (!foundPrey) {
+			float roll = Random.Range(0f, 1f);
+			if (roll > Activity) {
+				return false;
+			}
+		}
+		
 		if (shuffleSpace.Count == 0) {
 			return false;
 		}

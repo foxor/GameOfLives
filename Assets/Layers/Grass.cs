@@ -14,9 +14,9 @@ public class Grass {
 			val < MAX_HEIGHT
 		) {
 			if (Data.Singleton[x, y, SunLight.SUN_LAYER] == 1) {
-				return (byte)(val + 20);
+				return (byte)(val + 5);
 			}
-			return (byte)(val + 5);
+			return (byte)(val + 2);
 		}
 		if (Data.Singleton[x, y, Water.LAYER] > TOO_WET &&
 			val > 0
