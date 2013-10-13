@@ -8,15 +8,32 @@ public class AnimalCreator : MonoBehaviour {
 	
 	protected Rect windowRect, windowHoverRect;
 	protected Rect expanderRect, expanderHoverRect;
+	protected Rect testRect;
 	
 	private int lastScreenWidth, lastScreenHeight;
 	
 	private bool expanded;
 	
-	private string nameString;
+	private string nameSelection;
 	
-	protected Color color;
+	protected Color colorSelection;
 	protected Texture2D colorTex;
+	
+	protected bool eatsMeatSelection, eatsPlantSelection;
+	
+	protected bool walksSelection, swimsSelection;
+	
+	protected byte targetElevationSelection;
+	
+	protected byte breedingThresholdSelection;
+	
+	protected float activitySelection;
+	
+	protected float aggressionSelection;
+	
+	protected float birthRatioSelection;
+	
+	protected float combatAbilitySelection;
 	
 	// Use this for initialization
 	void Start () {
@@ -29,6 +46,8 @@ public class AnimalCreator : MonoBehaviour {
 		expanderRect = new Rect();		
 		expanderHoverRect = new Rect();
 		
+		testRect = new Rect(0, 0, 10, 10);
+		
 		windowSize = new Point(200, 600);
 		expanderSize = new Point(100, 30);
 		
@@ -36,10 +55,28 @@ public class AnimalCreator : MonoBehaviour {
 		
 		expanded = false;
 		
-		nameString = "Name";
+		nameSelection = "Name";
 		
-		color = new Color(255, 0, 0);
+		colorSelection = new Color(255, 0, 0);
 		colorTex = new Texture2D(1, 1);
+		
+		eatsMeatSelection = false;
+		eatsPlantSelection = true;
+		
+		walksSelection = true;
+		swimsSelection = false;
+		
+		targetElevationSelection = Water.SEA_LEVEL + (255 - Water.SEA_LEVEL)/2;
+		
+		breedingThresholdSelection = 70;
+		
+		activitySelection = 0.5f;
+		
+		aggressionSelection = 0.5f;
+		
+		birthRatioSelection = 0.5f;
+		
+		combatAbilitySelection = 0.5f;
 	}
 	
 	// Update is called once per frame
@@ -48,6 +85,17 @@ public class AnimalCreator : MonoBehaviour {
 			lastScreenWidth = Screen.width;
 			lastScreenHeight = Screen.height;
 			resizeEvent();
+		}
+		
+		if (!walksSelection) {
+			if (targetElevationSelection > Water.SEA_LEVEL) {
+				targetElevationSelection = Water.SEA_LEVEL;
+			}
+		}
+		if (!swimsSelection) {
+			if (targetElevationSelection < Water.SEA_LEVEL) {
+				targetElevationSelection = Water.SEA_LEVEL;
+			}
 		}
 	
 	}
@@ -73,15 +121,56 @@ public class AnimalCreator : MonoBehaviour {
 	}
 	
 	void windowFunction(int windowID) {
-		nameString = GUILayout.TextField(nameString);
+		GUI.skin.label.normal.textColor = Color.white;
+		
+		nameSelection = GUILayout.TextField(nameSelection);
+		
 		GUILayout.Label("Color");
-		GUI.skin.label.normal.background = colorTex;
-		color.r = GUILayout.HorizontalSlider(color.r, 0f, 1f);
-		color.g = GUILayout.HorizontalSlider(color.g, 0f, 1f);
-		color.b = GUILayout.HorizontalSlider(color.b, 0f, 1f);
-		color.a = 1f;
-		colorTex.SetPixel(0, 0, color);
+		colorSelection.r = GUILayout.HorizontalSlider(colorSelection.r, 0f, 1f);
+		colorSelection.g = GUILayout.HorizontalSlider(colorSelection.g, 0f, 1f);
+		colorSelection.b = GUILayout.HorizontalSlider(colorSelection.b, 0f, 1f);
+		colorSelection.a = 1f;
+		colorTex.SetPixel(0, 0, colorSelection);
 		colorTex.Apply();
+		GUI.skin.box.normal.background = colorTex;
+		GUILayout.Box("");
+		GUI.skin.box.normal.background = null;
+		
+		GUILayout.Label("Diet");
+		eatsPlantSelection = GUILayout.Toggle(eatsPlantSelection, "Eats Plants");
+		eatsMeatSelection = GUILayout.Toggle(eatsMeatSelection, "Eats Meat");
+		if (!(eatsMeatSelection || eatsPlantSelection)) {
+			eatsPlantSelection = true;
+		}
+		
+		GUILayout.Label("Habitat");
+		walksSelection = GUILayout.Toggle(walksSelection, "Walks on Land");
+		swimsSelection = GUILayout.Toggle(swimsSelection, "Swims in water");
+		if (!(walksSelection || swimsSelection)) {
+			walksSelection = true;
+		}
+		
+		GUILayout.Label("Target Elevation: " + targetElevationSelection);
+		targetElevationSelection = (byte)GUILayout.HorizontalSlider(targetElevationSelection, (swimsSelection) ? 0 : Water.SEA_LEVEL, (walksSelection) ? 255 : Water.SEA_LEVEL);
+		
+		GUILayout.Label("Breeding Threshold: " + breedingThresholdSelection);
+		breedingThresholdSelection = (byte)GUILayout.HorizontalSlider(breedingThresholdSelection, 0, 255);
+		
+		GUILayout.Label("Activity: " + activitySelection);
+		activitySelection = GUILayout.HorizontalSlider(activitySelection, 0, 1);
+		activitySelection = (float)((int)(activitySelection*100 + 0.5f))/100;
+		
+		GUILayout.Label("Aggression: " + aggressionSelection);
+		aggressionSelection = GUILayout.HorizontalSlider(aggressionSelection, 0, 1);
+		aggressionSelection = (float)((int)(aggressionSelection*100 + 0.5f))/100;
+		
+		GUILayout.Label("Birth Ratio: " + birthRatioSelection);
+		birthRatioSelection = GUILayout.HorizontalSlider(birthRatioSelection, 0, 1);
+		birthRatioSelection = (float)((int)(birthRatioSelection*100 + 0.5f))/100;
+		
+		GUILayout.Label("Combat Ability: " + combatAbilitySelection);
+		combatAbilitySelection = GUILayout.HorizontalSlider(combatAbilitySelection, 0, 1);
+		combatAbilitySelection = (float)((int)(combatAbilitySelection*100 + 0.5f))/100;
 	}
 	
 	private void resizeEvent() {

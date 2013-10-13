@@ -4,7 +4,7 @@ using System.Linq;
 
 public class Water : Layer {
 	protected const int SIGN_SHIFT = 31;
-	protected const int SEA_LEVEL = 100;
+	public const int SEA_LEVEL = 100;
 	
 	protected static Water singleton;
 	public static Water Singleton {

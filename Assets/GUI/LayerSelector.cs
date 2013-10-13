@@ -9,17 +9,7 @@ public class LayerSelector : MonoBehaviour {
 	protected const int MENU_WIDTH = 100;
 	
 	protected int layerSelectorSelection;
-	protected int LayerSelectorSelection {
-		get {
-			return layerSelectorSelection;
-		}
-		set {
-			if (value != layerSelectorSelection) {
-				layerSelectorSelection = value;
-				BoxManager.DisplayLayer ^= 1 << layerSelectorSelection;
-			}
-		}
-	}
+	protected int LayerSelectorSelection;
 	
 	protected Rect layerSelectorRect;
 	protected Rect layerSelectorHoverRect;
@@ -42,13 +32,17 @@ public class LayerSelector : MonoBehaviour {
 		Vector3 mousePosition = Input.mousePosition;
 		mousePosition.y = Screen.height - mousePosition.y;
 		
-		if (layerSelectorHoverRect.Contains(mousePosition)) {
-			LayerSelectorSelection = GUI.SelectionGrid(
-				layerSelectorRect, 
-				LayerSelectorSelection, 
-				LayerManager.Layers.Select(x => x.Name).ToArray(), 
-				1
-			);
+		if (layerSelectorHoverRect.Contains(mousePosition)) {	
+			GUI.Window(0, layerSelectorRect, windowFunction, "Layers");
+		}
+	}
+	
+	void windowFunction(int windowID) {
+		Layer[] layers = LayerManager.Layers.ToArray();
+		for (int i = 0; i < layers.Length; i++) {
+			if (GUILayout.Button(LayerManager.Layers.ElementAt(i).Name)) {
+				toggleLayer(i);
+			}
 		}
 	}
 	
@@ -59,5 +53,9 @@ public class LayerSelector : MonoBehaviour {
 	private void determineLayerToolbarRect() {
 		layerSelectorRect.Set(PADDING, PADDING, MENU_WIDTH, Screen.height - 2*PADDING);
 		layerSelectorHoverRect.Set(0, 0, MENU_WIDTH + PADDING*2, Screen.height);
+	}
+	
+	public void toggleLayer(int layerIndex) {
+		BoxManager.DisplayLayer ^= 1 << layerIndex;
 	}
 }
