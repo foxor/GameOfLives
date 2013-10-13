@@ -23,11 +23,11 @@ public class Animal {
 		this.diet = diet;
 		this.maxHealth = maxHealth;
 		
-		currentAnimals = new List<int[]>();
+		currentAnimalPositions = new List<int[]>();
 	}
 	
 	public Animal() {
-		currentAnimals = new List<int[]>();
+		currentAnimalPositions = new List<int[]>();
 	}
 	
 	public bool canSwim() {
@@ -47,11 +47,11 @@ public class Animal {
 	}
 	
 	protected int determineDirection() {
-		
+		return 0;
 	}
 	
 	public byte Process(byte val, int x, int y) {
-		
+		return 0;
 	}
 	
 	public void PerFrame() {
