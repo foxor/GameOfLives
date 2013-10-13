@@ -18,7 +18,8 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Bunny",
 					TargetElevation = 45,
-					Rarity = 5
+					Rarity = 5,
+					Carnivor = false
 				};
 			}
 			return bunny;
@@ -39,7 +40,8 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Wolf",
 					TargetElevation = 45,
-					Rarity = 1000
+					Rarity = 1000,
+					Carnivor = true
 				};
 			}
 			return wolf;
