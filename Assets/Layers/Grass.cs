@@ -6,7 +6,7 @@ public class Grass {
 	
 	public const int MAX_HEIGHT = 16;
 	
-	protected const int TOO_WET = 25;
+	public const int TOO_WET = 25;
 	
 	public static byte Process(byte val, int x, int y) {
 		if (Data.Singleton[x, y, Water.LAYER] > val &&
@@ -15,6 +15,11 @@ public class Grass {
 			val < MAX_HEIGHT
 		) {
 			return (byte)(val + 1);
+		}
+		if (Data.Singleton[x, y, Water.LAYER] > TOO_WET &&
+			val > 0
+		) {
+			return (byte)(val - 1);
 		}
 		return val;
 	}

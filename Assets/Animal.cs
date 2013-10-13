@@ -17,12 +17,9 @@ public class Animal {
 					DisplayColor = Color.white,
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Bunny",
-					TargetElevation = 45
+					TargetElevation = 45,
+					Rarity = 5
 				};
-				bunny.AddAnimal(
-					Random.Range(0, Data.Width),
-					Random.Range(0, Data.Height)
-				);
 			}
 			return bunny;
 		}
@@ -37,8 +34,10 @@ public class Animal {
 	protected const int HERBIVOR_FLAG = 1;
 	protected const int CARNIVOR_FLAG = 2;
 	
-	protected const int SWIM_DEPTH = 3;
+	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
+	protected const int MOVEMENT_ENERGY = 2;
+	protected const int STATIONARY_ENERGY = 1;
 	
 	protected static byte[] flowField;
 	
@@ -50,7 +49,9 @@ public class Animal {
 	public float Activity;
 	public int BreedingThreshold;
 	public float CombatAbility;
+	public int Rarity;
 	
+	protected int lastSpawn;
 	protected int layer;
 	
 	protected Dictionary<int, int> nextAnimalPositions;
@@ -67,11 +68,11 @@ public class Animal {
 	}
 	
 	public bool canSwim() {
-		return (Habitat | AQUATIC_FLAG) > 0;
+		return (Habitat & AQUATIC_FLAG) > 0;
 	}
 	
 	public bool canWalk() {
-		return (Habitat | TERRESTRIAL_FLAG) > 0;
+		return (Habitat & TERRESTRIAL_FLAG) > 0;
 	}
 	
 	protected static int posClamp(int x, int y) {
@@ -135,8 +136,40 @@ public class Animal {
 	
 	public byte Process(byte val, int x, int y) {
 		int pos = posClamp(x, y);
+		if (!canSwim() && Data.Singleton[x, y, Water.LAYER] > SWIM_DEPTH) {
+			return 0;
+		}
 		if (nextAnimalPositions.ContainsKey(pos)) {
-			return (byte)nextAnimalPositions[pos];
+			int lastVal = nextAnimalPositions[pos];
+			foreach (int prey in Diet) {
+				if (LayerMapping.ContainsKey(prey) && LayerMapping[prey].nextAnimalPositions.ContainsKey(pos)) {
+					// Do that combat resolution
+					float myAttack = CombatAbility * lastVal;
+					float theirAttack = LayerMapping[prey].CombatAbility * LayerMapping[prey].nextAnimalPositions[pos];
+					float myAttacks = LayerMapping[prey].nextAnimalPositions[pos] / myAttack;
+					float theirAttacks = lastVal / theirAttack;
+					if (myAttacks > theirAttacks) {
+						lastVal += LayerMapping[prey].nextAnimalPositions[pos];
+						lastVal = Mathf.Clamp(lastVal, 0, 255);
+						LayerMapping[prey].nextAnimalPositions.Remove(pos);
+						Data.Singleton.setNext(x, y, prey, 0);
+					}
+					else {
+						int theirVal = Mathf.Clamp(
+							lastVal + LayerMapping[prey].nextAnimalPositions[pos],
+							0, 255
+						);
+						LayerMapping[prey].nextAnimalPositions[pos] = (byte)theirVal;
+						return 0;
+					}
+				}
+				else if (Data.Singleton[x, y, prey] > 0) {
+					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey], 0, 255);
+					Data.Singleton.setNext(x, y, prey, 0);
+					Data.Singleton[x, y, prey] = 0;
+				}
+			}
+			return (byte)lastVal;
 		}
 		return 0;
 	}
@@ -146,6 +179,13 @@ public class Animal {
 	}
 	
 	public void PerFrame() {
+		if (--lastSpawn <= 0) {
+			AddAnimal(
+				Random.Range(0, Data.Width),
+				Random.Range(0, Data.Height)
+			);
+			lastSpawn = Rarity;
+		}
 		int[] delta = new int[2];
 		foreach (int key in nextAnimalPositions.Keys.ToArray()) {
 			int x = key % Data.Width;
@@ -158,12 +198,15 @@ public class Animal {
 					nextAnimalPositions[key] /= 2;
 				}
 				else {
-					int nextVal = nextAnimalPositions[key] - 1;
+					int nextVal = nextAnimalPositions[key] - MOVEMENT_ENERGY;
 					if (nextVal > 0) {
 						nextAnimalPositions[x + y * Data.Width] = nextVal;
 					}
 					nextAnimalPositions.Remove(key);
 				}
+			}
+			else {
+				nextAnimalPositions[key] -= STATIONARY_ENERGY;
 			}
 		}
 	}
