@@ -57,7 +57,7 @@ public class Animal : Layer {
 	
 	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
-	protected const int MOVEMENT_ENERGY = 2;
+	protected const float MOVEMENT_ENERGY = 2f;
 	protected const float STATIONARY_ENERGY = 0.5f;
 	
 	protected static byte[] flowField;
@@ -65,6 +65,7 @@ public class Animal : Layer {
 	public int TargetElevation;
 	public int Habitat;
 	public List<Layer> Diet;
+	public bool Carnivor;
 	public float Activity;
 	public float Aggression;
 	public int BreedingThreshold;
@@ -79,7 +80,7 @@ public class Animal : Layer {
 	public Animal() {
 		nextAnimalPositions = new Dictionary<int, int>();
 		
-		flowField = new byte[Data.Width * Data.Height];
+		flowField = FlowField.Generate((byte)TargetElevation);
 	}
 	
 	public override void OnStartup (int layer) {
@@ -97,6 +98,10 @@ public class Animal : Layer {
 	
 	public bool canWalk() {
 		return (Habitat & TERRESTRIAL_FLAG) > 0;
+	}
+	
+	public bool canEatMeat() {
+		return Carnivor;
 	}
 	
 	protected static int posClamp(int x, int y) {
@@ -169,6 +174,65 @@ public class Animal : Layer {
 		return true;
 	}
 	
+	protected byte ResolveCombat(int myVal, int x, int y, int pos, int prey) {
+		int theirVal = LayerMapping[prey].nextAnimalPositions[pos];
+		
+		float myAttack = CombatAbility * myVal;
+		float theirAttack = LayerMapping[prey].CombatAbility * theirVal;
+		
+		float myAttacks = theirVal / myAttack;
+		float theirAttacks = myVal / theirAttack;
+		
+		bool iWin = myAttacks < theirAttacks;
+		
+		float attacks = iWin ? myAttacks : theirAttacks;
+		
+		int theirDamage = Mathf.CeilToInt(attacks * theirVal);
+		int myDamage = Mathf.CeilToInt(attacks * myVal);
+		
+		bool iDie = !iWin | (theirDamage >= myVal);
+		bool theyDie = iWin | (myDamage >= theirVal);
+		
+		myVal = iDie ? 0 : Mathf.Clamp(
+			myVal - theirDamage,
+			0, 255
+		);
+		theirVal = theyDie ? 0 : Mathf.Clamp(
+			theirVal - myDamage,
+			0, 255
+		);
+		
+		if (iWin && canEatMeat() && !iDie) {
+			myVal = Mathf.Clamp(
+				myVal + theirVal,
+				0, 255
+			);
+		}
+		else if (!iWin && LayerMapping[prey].canEatMeat() && !theyDie) {
+			theirVal = Mathf.Clamp(
+				myVal + theirVal,
+				0, 255
+			);
+		}
+		
+		if (!iDie) {
+			nextAnimalPositions[pos] = myVal;
+		}
+		else {
+			nextAnimalPositions.Remove(pos);
+		}
+		
+		if (!theyDie) {
+			LayerMapping[prey].nextAnimalPositions[pos] = theirVal;
+		}
+		else {
+			LayerMapping[prey].nextAnimalPositions.Remove(pos);
+		}
+		Data.Singleton.setNext(x, y, prey, (byte)theirVal);
+		
+		return (byte)myVal;
+	}
+	
 	public override byte Process(byte val, int x, int y) {
 		int pos = posClamp(x, y);
 		if (!canSwim() && Data.Singleton[x, y, LayerManager.GetLayer<Water>()] > SWIM_DEPTH) {
@@ -181,26 +245,7 @@ public class Animal : Layer {
 					if (!LayerMapping[prey].nextAnimalPositions.ContainsKey(pos)) {
 						continue;
 					}
-					// Do that combat resolution
-					float myAttack = CombatAbility * lastVal;
-					float theirAttack = LayerMapping[prey].CombatAbility * LayerMapping[prey].nextAnimalPositions[pos];
-					float myAttacks = LayerMapping[prey].nextAnimalPositions[pos] / myAttack;
-					float theirAttacks = lastVal / theirAttack;
-					if (myAttacks < theirAttacks) {
-						lastVal += LayerMapping[prey].nextAnimalPositions[pos];
-						lastVal = Mathf.Clamp(lastVal, 0, 255);
-						nextAnimalPositions[pos] = (byte)lastVal;
-						LayerMapping[prey].nextAnimalPositions.Remove(pos);
-						Data.Singleton.setNext(x, y, prey, 0);
-					}
-					else {
-						int theirVal = Mathf.Clamp(
-							lastVal + LayerMapping[prey].nextAnimalPositions[pos],
-							0, 255
-						);
-						LayerMapping[prey].nextAnimalPositions[pos] = (byte)theirVal;
-						return 0;
-					}
+					lastVal = ResolveCombat(lastVal, x, y, pos, prey);
 				}
 				else if (Data.Singleton[x, y, prey] > 0) {
 					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey] * 20, 0, 255);
@@ -237,8 +282,10 @@ public class Animal : Layer {
 					nextAnimalPositions[key] /= 2;
 				}
 				else {
-					
-					int nextVal = nextAnimalPositions[key] - MOVEMENT_ENERGY;
+					int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(MOVEMENT_ENERGY);
+					if (Random.Range(0f, 1f) < STATIONARY_ENERGY % 1f) {
+						nextVal -= 1;
+					}
 					if (nextVal > 0) {
 						nextAnimalPositions[x + y * Data.Width] = nextVal;
 					}
@@ -246,9 +293,15 @@ public class Animal : Layer {
 				}
 			}
 			else {
-				nextAnimalPositions[key] -= Mathf.FloorToInt(STATIONARY_ENERGY);
+				int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(STATIONARY_ENERGY);
 				if (Random.Range(0f, 1f) < STATIONARY_ENERGY % 1f) {
-					nextAnimalPositions[key] -= 1;
+					nextVal -= 1;
+				}
+				if (nextVal > 0) {
+					nextAnimalPositions[key] = nextVal;
+				}
+				else {
+					nextAnimalPositions.Remove(key);
 				}
 			}
 		}
