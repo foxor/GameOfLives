@@ -10,6 +10,7 @@ public class Animal {
 			if (bunny == null) {
 				bunny = new Animal(4){
 					Activity = 0.4f,
+					Aggression = 0.4f,
 					BreedingThreshold = 60,
 					CombatAbility = 0.1f,
 					Diet = new List<int>(){Grass.LAYER},
@@ -30,7 +31,8 @@ public class Animal {
 			if (wolf == null) {
 				wolf = new Animal(5){
 					Activity = 0.05f,
-					BreedingThreshold = 200,
+					Aggression = 0.3f,
+					BreedingThreshold = 90,
 					CombatAbility = 0.6f,
 					Diet = new List<int>(){4},
 					DisplayColor = Color.black,
@@ -56,7 +58,7 @@ public class Animal {
 	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
 	protected const int MOVEMENT_ENERGY = 2;
-	protected const int STATIONARY_ENERGY = 0;
+	protected const float STATIONARY_ENERGY = 0.5f;
 	
 	protected static byte[] flowField;
 	
@@ -66,6 +68,7 @@ public class Animal {
 	public int Habitat;
 	public List<int> Diet;
 	public float Activity;
+	public float Aggression;
 	public int BreedingThreshold;
 	public float CombatAbility;
 	public int Rarity;
@@ -140,9 +143,14 @@ public class Animal {
 			}
 		}
 		
+		float roll = Random.Range(0f, 1f);
 		if (!foundPrey) {
-			float roll = Random.Range(0f, 1f);
 			if (roll > Activity) {
+				return false;
+			}
+		}
+		else {
+			if (roll > Aggression) {
 				return false;
 			}
 		}
@@ -236,7 +244,10 @@ public class Animal {
 				}
 			}
 			else {
-				nextAnimalPositions[key] -= STATIONARY_ENERGY;
+				nextAnimalPositions[key] -= Mathf.FloorToInt(STATIONARY_ENERGY);
+				if (Random.Range(0f, 1f) < STATIONARY_ENERGY % 1f) {
+					nextAnimalPositions[key] -= 1;
+				}
 			}
 		}
 	}
