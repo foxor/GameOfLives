@@ -15,9 +15,8 @@ public class AnimalCreator : MonoBehaviour {
 	
 	private string nameString;
 	
-	private Color color;
-	
-	private Texture2D colorRect;
+	protected Color color;
+	protected Texture2D colorTex;
 	
 	// Use this for initialization
 	void Start () {
@@ -40,10 +39,7 @@ public class AnimalCreator : MonoBehaviour {
 		nameString = "Name";
 		
 		color = new Color(255, 0, 0);
-		
-		colorRect = new Texture2D(1, 1);
-		colorRect.SetPixel(0, 0, color);
-		colorRect.Apply();
+		colorTex = new Texture2D(1, 1);
 	}
 	
 	// Update is called once per frame
@@ -79,9 +75,13 @@ public class AnimalCreator : MonoBehaviour {
 	void windowFunction(int windowID) {
 		nameString = GUILayout.TextField(nameString);
 		GUILayout.Label("Color");
-		color.r = GUILayout.HorizontalSlider(color.r, 0, 255);
-		color.g = GUILayout.HorizontalSlider(color.g, 0, 255);
-		color.b = GUILayout.HorizontalSlider(color.b, 0, 255);
+		GUI.skin.label.normal.background = colorTex;
+		color.r = GUILayout.HorizontalSlider(color.r, 0f, 1f);
+		color.g = GUILayout.HorizontalSlider(color.g, 0f, 1f);
+		color.b = GUILayout.HorizontalSlider(color.b, 0f, 1f);
+		color.a = 1f;
+		colorTex.SetPixel(0, 0, color);
+		colorTex.Apply();
 	}
 	
 	private void resizeEvent() {
@@ -94,6 +94,5 @@ public class AnimalCreator : MonoBehaviour {
 		
 		windowRect.Set(Screen.width - windowSize.x - PADDING, Screen.height - windowSize.y - PADDING, windowSize.x, windowSize.y);
 		windowHoverRect.Set(Screen.width - windowSize.x - 2*PADDING, Screen.height - windowSize.y - 2*PADDING, windowSize.x + PADDING, windowSize.y + PADDING);
-		
 	}
 }
