@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class Animal {
+public class Animal : Layer {
 	
 	protected static Animal bunny;
 	public static Animal Bunny {
 		get {
 			if (bunny == null) {
-				bunny = new Animal(4){
+				bunny = new Animal(){
 					Activity = 0.4f,
 					Aggression = 0.4f,
 					BreedingThreshold = 60,
 					CombatAbility = 0.1f,
-					Diet = new List<int>(){Grass.LAYER},
-					DisplayColor = Color.white,
+					Diet = new List<Layer>(){Grass.Singleton},
+					Color = Color.white,
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Bunny",
 					TargetElevation = 45,
@@ -29,13 +29,13 @@ public class Animal {
 	public static Animal Wolf {
 		get {
 			if (wolf == null) {
-				wolf = new Animal(5){
+				wolf = new Animal(){
 					Activity = 0.05f,
 					Aggression = 0.3f,
 					BreedingThreshold = 90,
 					CombatAbility = 0.6f,
-					Diet = new List<int>(){4},
-					DisplayColor = Color.black,
+					Diet = new List<Layer>(){Bunny},
+					Color = Color.black,
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Wolf",
 					TargetElevation = 45,
@@ -62,11 +62,9 @@ public class Animal {
 	
 	protected static byte[] flowField;
 	
-	public string Name;
-	public Color DisplayColor;
 	public int TargetElevation;
 	public int Habitat;
-	public List<int> Diet;
+	public List<Layer> Diet;
 	public float Activity;
 	public float Aggression;
 	public int BreedingThreshold;
@@ -78,15 +76,19 @@ public class Animal {
 	
 	protected Dictionary<int, int> nextAnimalPositions;
 	
-	public Animal(int layer) {
+	public Animal() {
 		nextAnimalPositions = new Dictionary<int, int>();
+		
+		flowField = new byte[Data.Width * Data.Height];
+	}
+	
+	public override void OnStartup (int layer) {
+		base.OnStartup (layer);
 		
 		if (LayerMapping == null) {
 			LayerMapping = new Dictionary<int, Animal>();
 		}
 		LayerMapping[layer] = this;
-		
-		flowField = new byte[Data.Width * Data.Height];
 	}
 	
 	public bool canSwim() {
@@ -116,10 +118,10 @@ public class Animal {
 				if (nextAnimalPositions.ContainsKey(pos)) {
 					continue;
 				}
-				if (!canSwim() && Data.Singleton[xPos, yPos, Water.LAYER] >= SWIM_DEPTH) {
+				if (!canSwim() && Data.Singleton[xPos, yPos, LayerManager.GetLayer<Water>()] >= SWIM_DEPTH) {
 					continue;
 				}
-				else if (!canWalk() && Data.Singleton[xPos, yPos, Water.LAYER] < SWIM_DEPTH) {
+				else if (!canWalk() && Data.Singleton[xPos, yPos, LayerManager.GetLayer<Water>()] < SWIM_DEPTH) {
 					continue;
 				}
 				if (!Data.boundsOk(xPos, yPos, layer)) {
@@ -128,7 +130,7 @@ public class Animal {
 				if (xPos == x && yPos == y) {
 					continue;
 				}
-				foreach (int prey in Diet) {
+				foreach (int prey in Diet.Select(d => d.LAYER)) {
 					if (Data.Singleton[xPos, yPos, prey] > 0) {
 						if (!foundPrey) {
 							foundPrey = true;
@@ -167,14 +169,14 @@ public class Animal {
 		return true;
 	}
 	
-	public byte Process(byte val, int x, int y) {
+	public override byte Process(byte val, int x, int y) {
 		int pos = posClamp(x, y);
-		if (!canSwim() && Data.Singleton[x, y, Water.LAYER] > SWIM_DEPTH) {
+		if (!canSwim() && Data.Singleton[x, y, LayerManager.GetLayer<Water>()] > SWIM_DEPTH) {
 			return 0;
 		}
 		if (nextAnimalPositions.ContainsKey(pos)) {
 			int lastVal = nextAnimalPositions[pos];
-			foreach (int prey in Diet) {
+			foreach (int prey in Diet.Select(d => d.LAYER)) {
 				if (LayerMapping.ContainsKey(prey)) {
 					if (!LayerMapping[prey].nextAnimalPositions.ContainsKey(pos)) {
 						continue;
@@ -215,7 +217,7 @@ public class Animal {
 		nextAnimalPositions[posClamp(x, y)] = 255;
 	}
 	
-	public void PerFrame() {
+	public override void PerFrame() {
 		if (--lastSpawn <= 0) {
 			AddAnimal(
 				Random.Range(0, Data.Width),
@@ -250,5 +252,9 @@ public class Animal {
 				}
 			}
 		}
+	}
+	
+	public override byte MaxValue () {
+		return (byte)BreedingThreshold;
 	}
 }

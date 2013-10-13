@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class LayerSelector : MonoBehaviour {
 	
@@ -7,7 +8,6 @@ public class LayerSelector : MonoBehaviour {
 	protected const int PADDING = 5;
 	protected const int MENU_WIDTH = 100;
 	
-	protected string[] layerToolbarNames = {"Sun", "Topo", "Water", "Grass", "Bunny", "Wolf"};
 	protected int layerSelectorSelection;
 	
 	protected Rect layerSelectorRect;
@@ -34,7 +34,12 @@ public class LayerSelector : MonoBehaviour {
 		mousePosition.y = Screen.height - mousePosition.y;
 		
 		if (layerSelectorHoverRect.Contains(mousePosition)) {
-			layerSelectorSelection = GUI.SelectionGrid(layerSelectorRect, layerSelectorSelection, layerToolbarNames, 1);
+			layerSelectorSelection = GUI.SelectionGrid(
+				layerSelectorRect, 
+				layerSelectorSelection, 
+				LayerManager.Layers.Select(x => x.Name).ToArray(), 
+				1
+			);
 		}
 	}
 	

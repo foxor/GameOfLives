@@ -28,7 +28,7 @@ public class Data : MonoBehaviour {
 		}
 	}
 	
-	public static int Depth {
+	public static int MaxDepth {
 		get {
 			return Singleton.depth;
 		}

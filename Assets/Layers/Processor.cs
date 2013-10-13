@@ -2,30 +2,18 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 
 public class Processor : MonoBehaviour {
 	
-	protected delegate byte cellProcessor (byte val, int x, int y);
-	
-	protected Dictionary<int, cellProcessor> layerProcessors = new Dictionary<int, cellProcessor> {
-		{0, SunLight.Process},
-		{1, Topography.Process},
-		{2, Water.Process},
-		{3, Grass.Process}
-	};
-	
-	public void Start() {
-		layerProcessors[4] = Animal.Bunny.Process;
-		layerProcessors[5] = Animal.Wolf.Process;
-	}
+	protected Layer[] layers;
 	
 	protected void Process() {
 		for (int x = 0; x < Data.Width; x++) {
 			for (int y = 0; y < Data.Height; y++) {
-				for (int z = 0; z < Data.Depth; z++) {
+				for (int z = 0; z < LayerManager.LayerDepth; z++) {
 					Data.Singleton.setNext(x, y, z, 
-						layerProcessors[z](Data.Singleton[x, y, z], x, y)
+						layers[z].Process(Data.Singleton[x, y, z], x, y)
 					);
 				}
 			}
@@ -33,7 +21,10 @@ public class Processor : MonoBehaviour {
 	}
 	
 	public void Update() {
-		PerFrame.Tick();
+		layers = LayerManager.Layers.ToArray();
+		foreach (Layer l in layers) {
+			l.PerFrame();
+		}
 		Process();
 		Data.Flip();
 	}

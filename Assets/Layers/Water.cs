@@ -2,11 +2,19 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Water {
+public class Water : Layer {
 	protected const int SIGN_SHIFT = 31;
 	protected const int SEA_LEVEL = 100;
 	
-	public const int LAYER = 2;
+	protected static Water singleton;
+	public static Water Singleton {
+		get {
+			if (singleton == null) {
+				singleton = new Water(){Color = Color.blue, Name = "Water"};
+			}
+			return singleton;
+		}
+	}
 	
 	protected static int[][] watchedCoords;
 	protected static int[][] WatchedCoords {
@@ -21,25 +29,25 @@ public class Water {
 	protected static IEnumerable<int[]> GetWatchedCoords() {
 		for (int x = 0; x < Data.Width; x++) {
 			for (int y = 0; y < Data.Height; y++) {
-				if (Data.Singleton[x, y, Topography.LAYER] < SEA_LEVEL) {
+				if (Data.Singleton[x, y, LayerManager.GetLayer<Topography>()] < SEA_LEVEL) {
 					yield return new int[] {x, y};
 				}
 			}
 		}
 	}
 	
-	protected static int GetAdjustedNeighborValue(int x, int y) {
+	protected int GetAdjustedNeighborValue(int x, int y) {
 		if (Data.boundsOk(x, y, LAYER)) {
-			return Data.Singleton[x, y, Topography.LAYER] + Data.Singleton[x, y, LAYER];
+			return Data.Singleton[x, y, LayerManager.GetLayer<Topography>()] + Data.Singleton[x, y, LAYER];
 		}
 		return SEA_LEVEL;
 	}
 	
-	public static byte Process(byte val, int x, int y) {
+	public override byte Process(byte val, int x, int y) {
 		if (val == 0) {
 			return 0;
 		}
-		int cVal = Data.Singleton[x, y, Topography.LAYER] + val;
+		int cVal = Data.Singleton[x, y, LayerManager.GetLayer<Topography>()] + val;
 		
 		for (int dx = -1; dx <= 1; dx++) {
 			for (int dy = -1; dy <= 1; dy++) {
@@ -58,7 +66,7 @@ public class Water {
 		return val;
 	}
 	
-	public static void PerFrame() {
+	public override void PerFrame() {
 		int x = Random.Range(0, Data.Width);
 		int y = Random.Range(0, Data.Height);
 		for (int i = 0; i < 100; i++) {

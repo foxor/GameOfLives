@@ -10,23 +10,7 @@ public class ColorManager : MonoBehaviour {
 	}
 	
 	public static Color Convert(byte val, int layer) {
-		switch (layer) {
-		case 0:
-			if (val == 1) {
-				return Color.yellow;
-			}
-			return Color.grey;
-		case 1:
-			return Color.Lerp(Color.black, Color.white, ((float)val) / ((float)byte.MaxValue));
-		case 2:
-			return Color.Lerp(Color.grey, Color.blue, ((float)val) / ((float)byte.MaxValue));
-		case 3:
-			return Color.Lerp(Color.grey, Color.green, ((float)val) / ((float)Grass.MAX_HEIGHT));
-		}
-		if (Animal.LayerMapping.ContainsKey(layer)) {
-			return Color.Lerp(Color.grey, Animal.LayerMapping[layer].DisplayColor, 
-				((float)val) / ((float)Animal.LayerMapping[layer].BreedingThreshold));
-		}
-		return Color.grey;
+		Layer l = LayerManager.GetLayer(layer);
+		return Color.Lerp(Color.grey, l.Color, ((float)val) / ((float)l.MaxValue()));
 	}
 }

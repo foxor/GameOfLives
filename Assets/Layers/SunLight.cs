@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class SunLight {
-	public const int SUN_LAYER = 0;
-	
+public class SunLight : Layer{
 	protected const float LEFT = 0.25f;
 	protected const float TOP = 0.50f;
 	protected const float RIGHT = 0.75f;
@@ -17,12 +15,22 @@ public class SunLight {
 	protected const int FRAMES_BETWEEN_GLIDERS = 18;
 	protected const float BEAM_SEPERATION = 0.05f;
 	
-	protected static int gliderTimer;
+	protected static SunLight singleton;
+	public static SunLight Singleton {
+		get {
+			if (singleton == null) {
+				singleton = new SunLight(){Color = Color.yellow, Name = "Sun"};
+			}
+			return singleton;
+		}
+	}
 	
-	protected static TimeMaster time = new TimeMaster();
+	protected int gliderTimer;
 	
-	public static byte Process (byte val, int x, int y) {
-		byte neighbors =  Data.Singleton.sumNeighbors(x, y, SUN_LAYER);
+	protected TimeMaster time = new TimeMaster();
+	
+	public override byte Process (byte val, int x, int y) {
+		byte neighbors =  Data.Singleton.sumNeighbors(x, y, LAYER);
 		int tooBig = ((neighbors & 4) >> 2) | ((neighbors & 8) >> 3);
 		int isThree = ((neighbors & 1) & ((neighbors & 2) >> 1)) & ~tooBig;
 		int tooSmall = (~tooBig & ~((neighbors & 2) >> 1)) & 1;
@@ -53,11 +61,11 @@ public class SunLight {
 		for (int position = 0; position < GLIDER_POSITIONS.GetLength(0); position++) {
 			int x = startX + (flipX ? -GLIDER_POSITIONS[position, 0] : GLIDER_POSITIONS[position, 0]);
 			int y = startY + (flipY ? -GLIDER_POSITIONS[position, 1] : GLIDER_POSITIONS[position, 1]);
-			Data.Singleton[x, y, SunLight.SUN_LAYER] = (byte)1;
+			Data.Singleton[x, y, LayerManager.GetLayer<SunLight>()] = (byte)1;
 		}
 	}
 	
-	public static void PerFrame() {
+	public override void PerFrame() {
 		time.step();
 		if ((--gliderTimer) <= 0) {
 			spawnSunlight(time.getTimeRatio());
@@ -65,5 +73,9 @@ public class SunLight {
 			spawnSunlight(((time.getTimeRatio() - BEAM_SEPERATION) + 1f) % 1f);
 			gliderTimer = FRAMES_BETWEEN_GLIDERS;
 		}
+	}
+	
+	public override byte MaxValue () {
+		return 1;
 	}
 }

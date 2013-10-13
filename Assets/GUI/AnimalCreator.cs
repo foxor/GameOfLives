@@ -48,7 +48,7 @@ public class AnimalCreator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (lastScreenWidth != Screen.width || lastScreenWidth != Screen.height) {
+		if (lastScreenWidth != Screen.width || lastScreenHeight != Screen.height) {
 			lastScreenWidth = Screen.width;
 			lastScreenHeight = Screen.height;
 			resizeEvent();
