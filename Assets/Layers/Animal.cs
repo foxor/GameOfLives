@@ -9,10 +9,10 @@ public class Animal : Layer {
 		get {
 			if (bunny == null) {
 				bunny = new Animal(){
-					Activity = 0.4f,
-					Aggression = 0.4f,
-					BreedingThreshold = 60,
-					CombatAbility = 0.1f,
+					Activity = 0.9f,
+					Aggression = 0.99f,
+					BreedingThreshold = 80,
+					CombatAbility = 0.01f,
 					Diet = new List<Layer>(){Grass.Singleton},
 					Color = Color.white,
 					Habitat = TERRESTRIAL_FLAG,
@@ -31,10 +31,10 @@ public class Animal : Layer {
 		get {
 			if (wolf == null) {
 				wolf = new Animal(){
-					Activity = 0.05f,
-					Aggression = 0.3f,
+					Activity = 0.02f,
+					Aggression = 0.9f,
 					BreedingThreshold = 90,
-					CombatAbility = 0.6f,
+					CombatAbility = 0.7f,
 					Diet = new List<Layer>(){Bunny},
 					Color = Color.black,
 					Habitat = TERRESTRIAL_FLAG,
@@ -59,8 +59,8 @@ public class Animal : Layer {
 	
 	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
-	protected const float MOVEMENT_ENERGY = 2f;
-	protected const float STATIONARY_ENERGY = 0.5f;
+	protected const float MOVEMENT_ENERGY = 0.5f;
+	protected const float STATIONARY_ENERGY = 0.01f;
 	
 	protected static byte[] flowField;
 	
