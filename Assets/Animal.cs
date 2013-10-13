@@ -29,7 +29,7 @@ public class Animal {
 		get {
 			if (wolf == null) {
 				wolf = new Animal(5){
-					Activity = 0.1f,
+					Activity = 0.05f,
 					BreedingThreshold = 200,
 					CombatAbility = 0.6f,
 					Diet = new List<int>(){4},
@@ -37,7 +37,7 @@ public class Animal {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Wolf",
 					TargetElevation = 45,
-					Rarity = 100
+					Rarity = 1000
 				};
 			}
 			return wolf;
@@ -122,6 +122,9 @@ public class Animal {
 				if (!Data.boundsOk(xPos, yPos, layer)) {
 					continue;
 				}
+				if (xPos == x && yPos == y) {
+					continue;
+				}
 				foreach (int prey in Diet) {
 					if (Data.Singleton[xPos, yPos, prey] > 0) {
 						if (!foundPrey) {
@@ -164,7 +167,10 @@ public class Animal {
 		if (nextAnimalPositions.ContainsKey(pos)) {
 			int lastVal = nextAnimalPositions[pos];
 			foreach (int prey in Diet) {
-				if (LayerMapping.ContainsKey(prey) && LayerMapping[prey].nextAnimalPositions.ContainsKey(pos)) {
+				if (LayerMapping.ContainsKey(prey)) {
+					if (!LayerMapping[prey].nextAnimalPositions.ContainsKey(pos)) {
+						continue;
+					}
 					// Do that combat resolution
 					float myAttack = CombatAbility * lastVal;
 					float theirAttack = LayerMapping[prey].CombatAbility * LayerMapping[prey].nextAnimalPositions[pos];
@@ -173,6 +179,7 @@ public class Animal {
 					if (myAttacks < theirAttacks) {
 						lastVal += LayerMapping[prey].nextAnimalPositions[pos];
 						lastVal = Mathf.Clamp(lastVal, 0, 255);
+						nextAnimalPositions[pos] = (byte)lastVal;
 						LayerMapping[prey].nextAnimalPositions.Remove(pos);
 						Data.Singleton.setNext(x, y, prey, 0);
 					}
@@ -220,6 +227,7 @@ public class Animal {
 					nextAnimalPositions[key] /= 2;
 				}
 				else {
+					
 					int nextVal = nextAnimalPositions[key] - MOVEMENT_ENERGY;
 					if (nextVal > 0) {
 						nextAnimalPositions[x + y * Data.Width] = nextVal;
