@@ -189,20 +189,11 @@ public class Animal : Layer {
 		
 		float attacks = iWin ? myAttacks : theirAttacks;
 		
-		int theirDamage = Mathf.CeilToInt(attacks * theirVal);
-		int myDamage = Mathf.CeilToInt(attacks * myVal);
+		int theirDamage = Mathf.CeilToInt(attacks * theirAttack);
+		int myDamage = Mathf.CeilToInt(attacks * myAttack);
 		
 		bool iDie = !iWin | (theirDamage >= myVal);
 		bool theyDie = iWin | (myDamage >= theirVal);
-		
-		myVal = iDie ? 0 : Mathf.Clamp(
-			myVal - theirDamage,
-			0, 255
-		);
-		theirVal = theyDie ? 0 : Mathf.Clamp(
-			theirVal - myDamage,
-			0, 255
-		);
 		
 		if (iWin && canEatMeat() && !iDie) {
 			myVal = Mathf.Clamp(
@@ -216,6 +207,15 @@ public class Animal : Layer {
 				0, 255
 			);
 		}
+		
+		myVal = iDie ? 0 : Mathf.Clamp(
+			myVal - theirDamage,
+			0, 255
+		);
+		theirVal = theyDie ? 0 : Mathf.Clamp(
+			theirVal - myDamage,
+			0, 255
+		);
 		
 		if (!iDie) {
 			nextAnimalPositions[pos] = myVal;
