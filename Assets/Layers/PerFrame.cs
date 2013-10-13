@@ -6,5 +6,6 @@ public class PerFrame {
 		SunLight.PerFrame();
 		Water.PerFrame();
 		Animal.Bunny.PerFrame();
+		Animal.Wolf.PerFrame();
 	}
 }

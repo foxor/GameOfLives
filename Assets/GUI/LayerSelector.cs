@@ -7,7 +7,7 @@ public class LayerSelector : MonoBehaviour {
 	protected const int PADDING = 5;
 	protected const int MENU_WIDTH = 100;
 	
-	protected string[] layerToolbarNames = {"Sun", "Topo", "Water", "Grass", "Bunny"};
+	protected string[] layerToolbarNames = {"Sun", "Topo", "Water", "Grass", "Bunny", "Wolf"};
 	protected int layerSelectorSelection;
 	
 	protected Rect layerSelectorRect;

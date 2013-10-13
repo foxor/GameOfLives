@@ -5,7 +5,6 @@ using System.Linq;
 public class Animal {
 	
 	protected static Animal bunny;
-	
 	public static Animal Bunny {
 		get {
 			if (bunny == null) {
@@ -23,7 +22,27 @@ public class Animal {
 			}
 			return bunny;
 		}
-	}	
+	}
+	
+	protected static Animal wolf;
+	public static Animal Wolf {
+		get {
+			if (wolf == null) {
+				wolf = new Animal(5){
+					Activity = 0.1f,
+					BreedingThreshold = 200,
+					CombatAbility = 0.6f,
+					Diet = new List<int>(){4},
+					DisplayColor = Color.black,
+					Habitat = TERRESTRIAL_FLAG,
+					Name = "Wolf",
+					TargetElevation = 45,
+					Rarity = 100
+				};
+			}
+			return wolf;
+		}
+	}
 	
 	public static Dictionary<int, Animal> LayerMapping;
 		
@@ -148,7 +167,7 @@ public class Animal {
 					float theirAttack = LayerMapping[prey].CombatAbility * LayerMapping[prey].nextAnimalPositions[pos];
 					float myAttacks = LayerMapping[prey].nextAnimalPositions[pos] / myAttack;
 					float theirAttacks = lastVal / theirAttack;
-					if (myAttacks > theirAttacks) {
+					if (myAttacks < theirAttacks) {
 						lastVal += LayerMapping[prey].nextAnimalPositions[pos];
 						lastVal = Mathf.Clamp(lastVal, 0, 255);
 						LayerMapping[prey].nextAnimalPositions.Remove(pos);
@@ -164,9 +183,9 @@ public class Animal {
 					}
 				}
 				else if (Data.Singleton[x, y, prey] > 0) {
-					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey], 0, 255);
-					Data.Singleton.setNext(x, y, prey, 0);
-					Data.Singleton[x, y, prey] = 0;
+					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey] * 2, 0, 255);
+					Data.Singleton[x, y, prey] /= 2;
+					Data.Singleton.setNext(x, y, prey, Data.Singleton[x, y, prey]);
 				}
 			}
 			return (byte)lastVal;

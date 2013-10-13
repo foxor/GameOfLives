@@ -17,6 +17,7 @@ public class Processor : MonoBehaviour {
 	
 	public void Start() {
 		layerProcessors[4] = Animal.Bunny.Process;
+		layerProcessors[5] = Animal.Wolf.Process;
 	}
 	
 	protected void Process() {
