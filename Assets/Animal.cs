@@ -10,7 +10,7 @@ public class Animal {
 			if (bunny == null) {
 				bunny = new Animal(4){
 					Activity = 0.4f,
-					BreedingThreshold = 30,
+					BreedingThreshold = 60,
 					CombatAbility = 0.1f,
 					Diet = new List<int>(){Grass.LAYER},
 					DisplayColor = Color.white,
@@ -56,7 +56,7 @@ public class Animal {
 	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
 	protected const int MOVEMENT_ENERGY = 2;
-	protected const int STATIONARY_ENERGY = 1;
+	protected const int STATIONARY_ENERGY = 0;
 	
 	protected static byte[] flowField;
 	
@@ -183,7 +183,7 @@ public class Animal {
 					}
 				}
 				else if (Data.Singleton[x, y, prey] > 0) {
-					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey] * 2, 0, 255);
+					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey] * 20, 0, 255);
 					Data.Singleton[x, y, prey] /= 2;
 					Data.Singleton.setNext(x, y, prey, Data.Singleton[x, y, prey]);
 				}

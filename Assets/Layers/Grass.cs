@@ -11,10 +11,12 @@ public class Grass {
 	public static byte Process(byte val, int x, int y) {
 		if (Data.Singleton[x, y, Water.LAYER] > val &&
 			Data.Singleton[x, y, Water.LAYER] < TOO_WET &&
-			Data.Singleton[x, y, SunLight.SUN_LAYER] == 1 &&
 			val < MAX_HEIGHT
 		) {
-			return (byte)(val + 1);
+			if (Data.Singleton[x, y, SunLight.SUN_LAYER] == 1) {
+				return (byte)(val + 20);
+			}
+			return (byte)(val + 5);
 		}
 		if (Data.Singleton[x, y, Water.LAYER] > TOO_WET &&
 			val > 0
