@@ -5,7 +5,7 @@ using System.Threading;
 public class Data : MonoBehaviour {
 	protected int width = 30;
 	protected int height = 30;
-	protected int depth = 4;
+	protected int depth = 5;
 	
 	protected bool parity;
 	protected byte[] data1;

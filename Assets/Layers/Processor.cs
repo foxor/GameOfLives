@@ -15,6 +15,10 @@ public class Processor : MonoBehaviour {
 		{3, Grass.Process}
 	};
 	
+	public void Start() {
+		layerProcessors[4] = Animal.Bunny.Process;
+	}
+	
 	protected void Process() {
 		for (int x = 0; x < Data.Width; x++) {
 			for (int y = 0; y < Data.Height; y++) {

@@ -23,6 +23,10 @@ public class ColorManager : MonoBehaviour {
 		case 3:
 			return Color.Lerp(Color.grey, Color.green, ((float)val) / ((float)Grass.MAX_HEIGHT));
 		}
-		return Color.black;
+		if (Animal.LayerMapping.ContainsKey(layer)) {
+			return Color.Lerp(Color.grey, Animal.LayerMapping[layer].DisplayColor, 
+				((float)val) / ((float)Animal.LayerMapping[layer].BreedingThreshold));
+		}
+		return Color.grey;
 	}
 }
