@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class AnimalCreator : MonoBehaviour {
 	
@@ -36,6 +37,8 @@ public class AnimalCreator : MonoBehaviour {
 	protected float birthRatioSelection;
 	
 	protected float combatAbilitySelection;
+	
+	protected float efficiencySelection;
 	
 	// Use this for initialization
 	void Start () {
@@ -77,6 +80,8 @@ public class AnimalCreator : MonoBehaviour {
 		birthRatioSelection = 0.5f;
 		
 		combatAbilitySelection = 0.5f;
+		
+		efficiencySelection = 0.5f;
 	}
 	
 	// Update is called once per frame
@@ -172,8 +177,30 @@ public class AnimalCreator : MonoBehaviour {
 		combatAbilitySelection = GUILayout.HorizontalSlider(combatAbilitySelection, 0, 1);
 		combatAbilitySelection = (float)((int)(combatAbilitySelection*100 + 0.5f))/100;
 		
+		GUILayout.Label("Efficiency: " + combatAbilitySelection);
+		efficiencySelection = GUILayout.HorizontalSlider(efficiencySelection, 0, 1);
+		efficiencySelection = (float)((int)(efficiencySelection*100 + 0.5f))/100;
+		
 		if (GUILayout.Button("Create")) {
-			
+			LayerManager.AddLayer(new Animal() {
+				Activity = activitySelection,
+				Aggression = aggressionSelection,
+				BirthWeight = birthRatioSelection,
+				BreedingThreshold = breedingThresholdSelection,
+				Carnivor = eatsMeatSelection,
+				CombatAbility = combatAbilitySelection,
+				Color = colorSelection,
+				Diet = 
+					LayerManager.Layers.Where(x => 
+						(x.GetType() == typeof(Animal) && eatsMeatSelection && ((Animal)x).Aggression < aggressionSelection) ||
+						(x.GetType() == typeof(Grass) && eatsPlantSelection)
+					).ToList(),
+				Habitat = 
+					(walksSelection ? Animal.TERRESTRIAL_FLAG : 0) |
+					(swimsSelection ? Animal.AQUATIC_FLAG : 0),
+				Inefficiency = efficiencySelection,
+				TargetElevation = targetElevationSelection
+			});
 		}
 		
 		GUI.EndScrollView();

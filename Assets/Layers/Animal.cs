@@ -53,11 +53,11 @@ public class Animal : Layer {
 	public static Dictionary<int, Animal> LayerMapping;
 		
 	
-	protected const int TERRESTRIAL_FLAG = 1;
-	protected const int AQUATIC_FLAG = 2;
+	public const int TERRESTRIAL_FLAG = 1;
+	public const int AQUATIC_FLAG = 2;
 	
-	protected const int HERBIVOR_FLAG = 1;
-	protected const int CARNIVOR_FLAG = 2;
+	public const int HERBIVOR_FLAG = 1;
+	public const int CARNIVOR_FLAG = 2;
 	
 	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
