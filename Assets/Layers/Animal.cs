@@ -18,7 +18,6 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Bunny",
 					TargetElevation = 45,
-					Rarity = 5,
 					Carnivor = false
 				};
 			}
@@ -40,7 +39,6 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Wolf",
 					TargetElevation = 45,
-					Rarity = 1000,
 					Carnivor = true
 				};
 			}
@@ -61,6 +59,7 @@ public class Animal : Layer {
 	protected const int TERRITORY_DEAD_ZONE = 50;
 	protected const float MOVEMENT_ENERGY = 0.77f;
 	protected const float STATIONARY_ENERGY = 0.77f;
+	protected const int EXTINCTION_PENALTY = 10;
 	
 	protected static byte[] flowField;
 	
@@ -72,10 +71,9 @@ public class Animal : Layer {
 	public float Aggression;
 	public int BreedingThreshold;
 	public float CombatAbility;
-	public int Rarity;
 	
-	protected int lastSpawn;
 	protected int layer;
+	protected int extinctionCounter;
 	
 	protected Dictionary<int, int> nextAnimalPositions;
 	
@@ -252,9 +250,10 @@ public class Animal : Layer {
 					lastVal = ResolveCombat(lastVal, x, y, pos, prey);
 				}
 				else if (Data.Singleton[x, y, prey] > 0) {
-					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey] * 20, 0, 255);
-					Data.Singleton[x, y, prey] /= 2;
+					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey], 0, 255);
+					Data.Singleton[x, y, prey] = 0;
 					Data.Singleton.setNext(x, y, prey, Data.Singleton[x, y, prey]);
+					nextAnimalPositions[pos] = lastVal;
 				}
 			}
 			return (byte)lastVal;
@@ -267,12 +266,12 @@ public class Animal : Layer {
 	}
 	
 	public override void PerFrame() {
-		if (--lastSpawn <= 0) {
+		if (nextAnimalPositions.Count == 0 && --extinctionCounter <= 0) {
 			AddAnimal(
 				Random.Range(0, Data.Width),
 				Random.Range(0, Data.Height)
 			);
-			lastSpawn = Rarity;
+			extinctionCounter = EXTINCTION_PENALTY;
 		}
 		int[] delta = new int[2];
 		foreach (int key in nextAnimalPositions.Keys.ToArray()) {
