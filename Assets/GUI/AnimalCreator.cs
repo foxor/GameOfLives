@@ -149,14 +149,20 @@ public class AnimalCreator : MonoBehaviour {
 		timer -= Time.deltaTime;
 	}
 	
+	protected bool EnableCreate {
+		get {
+			return timer <= 0 && LayerManager.LayerDepth < Data.MaxDepth;
+		}
+	}
+	
 	void OnGUI() {
 		Vector3 mousePosition = Input.mousePosition;
 		mousePosition.y = Screen.height - mousePosition.y;
 		
-		if (expanderHoverRect.Contains(mousePosition) && timer <= 0) {
+		if (expanderHoverRect.Contains(mousePosition) && EnableCreate) {
 			expanded = true;
 		}
-		else if (expanded && !windowHoverRect.Contains(mousePosition) && timer <= 0) {
+		else if (expanded && !windowHoverRect.Contains(mousePosition) && EnableCreate) {
 			expanded = false;
 		}
 		
@@ -164,7 +170,7 @@ public class AnimalCreator : MonoBehaviour {
 			windowRect = GUI.Window(0, windowRect, windowFunction, "");			
 		}
 		else {
-			GUI.enabled = timer <= 0;
+			GUI.enabled = EnableCreate;
 			GUI.Box(expanderRect, "Make a creature");
 			GUI.enabled = true;
 		}
