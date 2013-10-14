@@ -18,8 +18,9 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Bunny",
 					TargetElevation = 45,
-					Rarity = 5,
-					Carnivor = false
+					Carnivor = false,
+					BirthWeight = 0.8f,
+					Inefficiency = 0.6f
 				};
 			}
 			return bunny;
@@ -40,8 +41,9 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Wolf",
 					TargetElevation = 45,
-					Rarity = 1000,
-					Carnivor = true
+					Carnivor = true,
+					BirthWeight = 0.6f,
+					Inefficiency = 0.8f
 				};
 			}
 			return wolf;
@@ -51,16 +53,17 @@ public class Animal : Layer {
 	public static Dictionary<int, Animal> LayerMapping;
 		
 	
-	protected const int TERRESTRIAL_FLAG = 1;
-	protected const int AQUATIC_FLAG = 2;
+	public const int TERRESTRIAL_FLAG = 1;
+	public const int AQUATIC_FLAG = 2;
 	
-	protected const int HERBIVOR_FLAG = 1;
-	protected const int CARNIVOR_FLAG = 2;
+	public const int HERBIVOR_FLAG = 1;
+	public const int CARNIVOR_FLAG = 2;
 	
 	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
-	protected const float MOVEMENT_ENERGY = 0.77f;
-	protected const float STATIONARY_ENERGY = 0.77f;
+	protected const float MOVEMENT_ENERGY = 2f;
+	protected const float STATIONARY_ENERGY = 1f;
+	protected const int EXTINCTION_PENALTY = 10;
 	
 	protected static byte[] flowField;
 	
@@ -72,10 +75,11 @@ public class Animal : Layer {
 	public float Aggression;
 	public int BreedingThreshold;
 	public float CombatAbility;
-	public int Rarity;
+	public float BirthWeight;
+	public float Inefficiency;
 	
-	protected int lastSpawn;
 	protected int layer;
+	protected int extinctionCounter;
 	
 	protected Dictionary<int, int> nextAnimalPositions;
 	
@@ -252,9 +256,10 @@ public class Animal : Layer {
 					lastVal = ResolveCombat(lastVal, x, y, pos, prey);
 				}
 				else if (Data.Singleton[x, y, prey] > 0) {
-					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey] * 20, 0, 255);
-					Data.Singleton[x, y, prey] /= 2;
+					lastVal = Mathf.Clamp(lastVal + Data.Singleton[x, y, prey], 0, 255);
+					Data.Singleton[x, y, prey] = 0;
 					Data.Singleton.setNext(x, y, prey, Data.Singleton[x, y, prey]);
+					nextAnimalPositions[pos] = lastVal;
 				}
 			}
 			return (byte)lastVal;
@@ -267,12 +272,12 @@ public class Animal : Layer {
 	}
 	
 	public override void PerFrame() {
-		if (--lastSpawn <= 0) {
+		if (nextAnimalPositions.Count == 0 && --extinctionCounter <= 0) {
 			AddAnimal(
 				Random.Range(0, Data.Width),
 				Random.Range(0, Data.Height)
 			);
-			lastSpawn = Rarity;
+			extinctionCounter = EXTINCTION_PENALTY;
 		}
 		int[] delta = new int[2];
 		foreach (int key in nextAnimalPositions.Keys.ToArray()) {
@@ -282,12 +287,12 @@ public class Animal : Layer {
 				x += delta[0];
 				y += delta[1];
 				if (nextAnimalPositions[key] > BreedingThreshold) {
-					nextAnimalPositions[x + y * Data.Width] = nextAnimalPositions[key] / 2;
-					nextAnimalPositions[key] /= 2;
+					nextAnimalPositions[x + y * Data.Width] = (byte)((float)nextAnimalPositions[key] * BirthWeight);
+					nextAnimalPositions[key] = (byte)((float)nextAnimalPositions[key] * (1f - BirthWeight));
 				}
 				else {
-					int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(MOVEMENT_ENERGY);
-					if (Random.Range(0f, 1f) < STATIONARY_ENERGY % 1f) {
+					int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt((MOVEMENT_ENERGY * Inefficiency));
+					if (Random.Range(0f, 1f) < (MOVEMENT_ENERGY * Inefficiency) % 1f) {
 						nextVal -= 1;
 					}
 					if (nextVal > 0) {
@@ -297,8 +302,8 @@ public class Animal : Layer {
 				}
 			}
 			else {
-				int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(STATIONARY_ENERGY);
-				if (Random.Range(0f, 1f) < STATIONARY_ENERGY % 1f) {
+				int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(STATIONARY_ENERGY * Inefficiency);
+				if (Random.Range(0f, 1f) < (STATIONARY_ENERGY * Inefficiency) % 1f) {
 					nextVal -= 1;
 				}
 				if (nextVal > 0) {
@@ -309,6 +314,10 @@ public class Animal : Layer {
 				}
 			}
 		}
+	}
+	
+	public int NumSurviving() {
+		return nextAnimalPositions.Count;
 	}
 	
 	public override byte MaxValue () {

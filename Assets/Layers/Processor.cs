@@ -32,10 +32,10 @@ public class Processor : MonoBehaviour {
 		while (true) {
 			layers = LayerManager.Layers.ToArray();
 			int z;
-			for (z = 0; z < LayerManager.LayerDepth; z++) {
+			for (z = 0; z < layers.Length; z++) {
 				layers[z].PerFrame();
 			}
-			for (z = 0; z < LayerManager.LayerDepth; z++) {
+			for (z = 0; z < layers.Length; z++) {
 				Process(z);
 				if (--frameCounter <= 0) {
 					yield return 0;
