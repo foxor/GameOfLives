@@ -57,7 +57,7 @@ public class LayerSelector : MonoBehaviour {
 				toggleLayer(i);
 			}
 			position.Set (position.x + position.width + PADDING, position.y, 30, 30);
-			fillTexture(colorTex, new Color(layers[i].Color.r, layers[i].Color.g, layers[i].Color.b, 1f));
+			fillTexture(colorTex, new Color(layers[i].Color.r, layers[i].Color.g, layers[i].Color.b, 1f), (BoxManager.DisplayLayer & (1 << i)) == 0);
 			GUI.Box(position, colorTex);
 		}
 		
@@ -77,10 +77,15 @@ public class LayerSelector : MonoBehaviour {
 		BoxManager.DisplayLayer ^= 1 << layerIndex;
 	}
 	
-	private static void fillTexture(Texture2D tex, Color color) {
+	private static void fillTexture(Texture2D tex, Color color, bool slashed) {
 		for (int x = 0; x < tex.width; x++) {
 			for (int y = 0; y < tex.height; y++) {
-				tex.SetPixel(x, y, color);
+				if (slashed && y > tex.height/3 && y < tex.height/3*2) {
+					tex.SetPixel(x, y, ((x/2) % 2 == 0) ? Color.black : Color.white);
+				}
+				else {
+					tex.SetPixel(x, y, color);
+				}
 			}
 		}
 		tex.Apply ();
