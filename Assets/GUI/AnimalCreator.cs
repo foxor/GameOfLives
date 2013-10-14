@@ -4,6 +4,35 @@ using System.Linq;
 
 public class AnimalCreator : MonoBehaviour {
 	
+	protected static string[] ANIMAL_NAMES = new string[] {
+		"Hippogryph",
+		"Basalisk",
+		"Grizzly bear",
+		"Fox",
+		"Hound",
+		"Pidgeon",
+		"Snake",
+		"Worm",
+		"Mouse",
+		"Hawk",
+		"Lion",
+		"Cheetah",
+		"Giraffe",
+		"Rhino",
+		"Tricerotops",
+		"Whale",
+		"Salmon",
+		"Oyster",
+		"Human",
+		"Elephant",
+		"Polar bear",
+		"Housecat",
+		"Eagle",
+		"Tuna",
+		"Octopus",
+		"Cthulhu"
+	};
+	
 	public static int PADDING = 5;
 	public Point windowSize, expanderSize;
 	
@@ -42,6 +71,8 @@ public class AnimalCreator : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		Randomize();
+		
 		lastScreenWidth = Screen.width;
 		lastScreenHeight = Screen.height;
 		
@@ -56,33 +87,41 @@ public class AnimalCreator : MonoBehaviour {
 		
 		determineRectangles();
 		
-		expanded = false;
-		
-		nameSelection = "Name";
-		
-		colorSelection = new Color(255, 0, 0);
 		colorTex = new Texture2D((int)(windowRect.width*.75 + 0.5), 16);
-		
-		eatsMeatSelection = false;
-		eatsPlantSelection = true;
-		
-		walksSelection = true;
-		swimsSelection = false;
-		
-		targetElevationSelection = Water.SEA_LEVEL + (255 - Water.SEA_LEVEL)/2;
-		
-		breedingThresholdSelection = 70;
-		
-		activitySelection = 0.5f;
-		
-		aggressionSelection = 0.5f;
-		
-		birthRatioSelection = 0.5f;
-		
-		combatAbilitySelection = 0.5f;
-		
-		efficiencySelection = 0.5f;
 	}
+	
+	protected void Randomize() {
+		nameSelection = ANIMAL_NAMES.OrderBy(x => Random.Range(0f, 1f)).First();
+		expanded = false;
+		colorSelection = new Color(
+			Random.Range(0f, 1f),
+			Random.Range(0f, 1f),
+			Random.Range(0f, 1f),
+			1f
+		);
+		
+		eatsMeatSelection = Random.Range(0f, 1f) < 0.666f;
+		eatsPlantSelection = !eatsMeatSelection || (Random.Range(0f, 1f) < 0.5f);
+		
+		
+		targetElevationSelection = (byte)Random.Range(0, 255);
+		
+		swimsSelection = targetElevationSelection <= Water.SEA_LEVEL || Random.Range(0f, 1f) < 0.5f;
+		walksSelection = targetElevationSelection > Water.SEA_LEVEL || (Random.Range(0f, 1f) < 0.5f);
+		
+		breedingThresholdSelection = (byte)Random.Range(0, 255);
+		
+		activitySelection = Random.Range(0f, 1f);
+		
+		aggressionSelection = Random.Range(0f, 1f);
+		
+		birthRatioSelection = Random.Range(0f, 1f);
+		
+		combatAbilitySelection = Random.Range(0f, 1f);
+		
+		efficiencySelection = Random.Range(0f, 1f);
+	}
+	
 	
 	// Update is called once per frame
 	void Update () {
@@ -198,6 +237,8 @@ public class AnimalCreator : MonoBehaviour {
 				Inefficiency = efficiencySelection,
 				TargetElevation = targetElevationSelection
 			});
+			
+			Randomize();
 		}
 		
 		GUI.EndScrollView();
