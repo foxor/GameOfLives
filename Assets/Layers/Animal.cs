@@ -18,7 +18,8 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Bunny",
 					TargetElevation = 45,
-					Carnivor = false
+					Carnivor = false,
+					BirthWeight = 0.8f
 				};
 			}
 			return bunny;
@@ -39,7 +40,8 @@ public class Animal : Layer {
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Wolf",
 					TargetElevation = 45,
-					Carnivor = true
+					Carnivor = true,
+					BirthWeight = 0.6f
 				};
 			}
 			return wolf;
@@ -71,6 +73,7 @@ public class Animal : Layer {
 	public float Aggression;
 	public int BreedingThreshold;
 	public float CombatAbility;
+	public float BirthWeight;
 	
 	protected int layer;
 	protected int extinctionCounter;
@@ -281,8 +284,8 @@ public class Animal : Layer {
 				x += delta[0];
 				y += delta[1];
 				if (nextAnimalPositions[key] > BreedingThreshold) {
-					nextAnimalPositions[x + y * Data.Width] = nextAnimalPositions[key] / 2;
-					nextAnimalPositions[key] /= 2;
+					nextAnimalPositions[x + y * Data.Width] = (byte)((float)nextAnimalPositions[key] * BirthWeight);
+					nextAnimalPositions[key] = (byte)((float)nextAnimalPositions[key] * (1f - BirthWeight));
 				}
 				else {
 					int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(MOVEMENT_ENERGY);
