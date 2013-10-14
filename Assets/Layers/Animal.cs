@@ -19,7 +19,8 @@ public class Animal : Layer {
 					Name = "Bunny",
 					TargetElevation = 45,
 					Carnivor = false,
-					BirthWeight = 0.8f
+					BirthWeight = 0.8f,
+					Inefficiency = 0.6f
 				};
 			}
 			return bunny;
@@ -41,7 +42,8 @@ public class Animal : Layer {
 					Name = "Wolf",
 					TargetElevation = 45,
 					Carnivor = true,
-					BirthWeight = 0.6f
+					BirthWeight = 0.6f,
+					Inefficiency = 0.8f
 				};
 			}
 			return wolf;
@@ -59,8 +61,8 @@ public class Animal : Layer {
 	
 	protected const int SWIM_DEPTH = Grass.TOO_WET;
 	protected const int TERRITORY_DEAD_ZONE = 50;
-	protected const float MOVEMENT_ENERGY = 0.77f;
-	protected const float STATIONARY_ENERGY = 0.77f;
+	protected const float MOVEMENT_ENERGY = 2f;
+	protected const float STATIONARY_ENERGY = 1f;
 	protected const int EXTINCTION_PENALTY = 10;
 	
 	protected static byte[] flowField;
@@ -74,6 +76,7 @@ public class Animal : Layer {
 	public int BreedingThreshold;
 	public float CombatAbility;
 	public float BirthWeight;
+	public float Inefficiency;
 	
 	protected int layer;
 	protected int extinctionCounter;
@@ -288,8 +291,8 @@ public class Animal : Layer {
 					nextAnimalPositions[key] = (byte)((float)nextAnimalPositions[key] * (1f - BirthWeight));
 				}
 				else {
-					int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(MOVEMENT_ENERGY);
-					if (Random.Range(0f, 1f) < STATIONARY_ENERGY % 1f) {
+					int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt((MOVEMENT_ENERGY * Inefficiency));
+					if (Random.Range(0f, 1f) < (MOVEMENT_ENERGY * Inefficiency) % 1f) {
 						nextVal -= 1;
 					}
 					if (nextVal > 0) {
@@ -299,8 +302,8 @@ public class Animal : Layer {
 				}
 			}
 			else {
-				int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(STATIONARY_ENERGY);
-				if (Random.Range(0f, 1f) < STATIONARY_ENERGY % 1f) {
+				int nextVal = nextAnimalPositions[key] - Mathf.FloorToInt(STATIONARY_ENERGY * Inefficiency);
+				if (Random.Range(0f, 1f) < (STATIONARY_ENERGY * Inefficiency) % 1f) {
 					nextVal -= 1;
 				}
 				if (nextVal > 0) {
