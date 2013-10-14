@@ -4,7 +4,7 @@ using System.Linq;
 
 public class Challenge : MonoBehaviour {
 	protected const int CHALLENGE_TIMER = 10000;
-	protected static int THRIVING_REQUIREMENT = 2;
+	protected const int THRIVING_REQUIREMENT = 10;
 	
 	protected int DiversityThreshold = 2;
 	protected int timer = CHALLENGE_TIMER;
@@ -44,7 +44,7 @@ public class Challenge : MonoBehaviour {
 	
 	public void OnGUI() {
 		GUILayout.BeginArea(reportArea);
-		GUILayout.Label("Level " + (THRIVING_REQUIREMENT - 1) + ": ");
+		GUILayout.Label("Level " + (DiversityThreshold - 1) + ": ");
 		if (thriving < THRIVING_REQUIREMENT) {
 			GUILayout.Label(thriving + " species currently thriving, " + THRIVING_REQUIREMENT + " required");
 		}
@@ -54,7 +54,7 @@ public class Challenge : MonoBehaviour {
 		else if (hasWon) {
 			GUILayout.Label("You Win!  Yaaaay!");
 			if (GUILayout.Button("Level Up")) {
-				THRIVING_REQUIREMENT += 1;
+				DiversityThreshold += 1;
 				timer = CHALLENGE_TIMER;
 			}
 		}

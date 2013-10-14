@@ -187,14 +187,11 @@ public class AnimalCreator : MonoBehaviour {
 				Aggression = aggressionSelection,
 				BirthWeight = birthRatioSelection,
 				BreedingThreshold = breedingThresholdSelection,
-				Carnivor = eatsMeatSelection,
 				CombatAbility = combatAbilitySelection,
 				Color = colorSelection,
-				Diet = 
-					LayerManager.Layers.Where(x => 
-						(x.GetType() == typeof(Animal) && eatsMeatSelection && ((Animal)x).Aggression < aggressionSelection) ||
-						(x.GetType() == typeof(Grass) && eatsPlantSelection)
-					).ToList(),
+				Digestion = 
+					(eatsMeatSelection ? Animal.CARNIVOR_FLAG : 0) |
+					(eatsPlantSelection ? Animal.HERBIVOR_FLAG : 0),
 				Habitat = 
 					(walksSelection ? Animal.TERRESTRIAL_FLAG : 0) |
 					(swimsSelection ? Animal.AQUATIC_FLAG : 0),
