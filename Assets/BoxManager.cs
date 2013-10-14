@@ -30,6 +30,7 @@ public class BoxManager : MonoBehaviour {
 	
 	public void Awake() {
 		singleton = this;
+		displayLayer = -1;
 	}
 	
 	public void Start() {
@@ -65,14 +66,14 @@ public class BoxManager : MonoBehaviour {
 		for (int x = 0; x < Data.Width; x++) {
 			for (int y = 0; y < Data.Height; y++) {
 				int bestLayer = 0;
-				int bestVal = 0;
+				float bestVal = 0;
 				byte bestValOrig = 0;
 				for (int z = 0; z < LayerManager.LayerDepth; z++) {
 					if (((1 << z) & displayLayer) == 0) {
 						continue;
 					}
 					byte orig = Data.Singleton[x, y, z];
-					int val = orig * (z + 1);
+					float val = ((float)orig) / ((float)(LayerManager.GetLayer(z).MaxValue()))  * (z + 1f);
 					if (val > bestVal) {
 						bestLayer = z;
 						bestVal = val;
