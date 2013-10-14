@@ -4,7 +4,7 @@ using System.Linq;
 
 public class Challenge : MonoBehaviour {
 	protected const int CHALLENGE_TIMER = 10000;
-	protected const int THRIVING_REQUIREMENT = 2;
+	protected static int THRIVING_REQUIREMENT = 2;
 	
 	protected int DiversityThreshold = 2;
 	protected int timer = CHALLENGE_TIMER;
@@ -52,6 +52,10 @@ public class Challenge : MonoBehaviour {
 		}
 		else if (hasWon) {
 			GUILayout.Label("You Win!  Yaaaay!");
+			if (GUILayout.Button("Level Up")) {
+				THRIVING_REQUIREMENT += 1;
+				timer = CHALLENGE_TIMER;
+			}
 		}
 		GUILayout.EndArea();
 	}
