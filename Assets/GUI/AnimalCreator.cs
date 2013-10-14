@@ -234,6 +234,9 @@ public class AnimalCreator : MonoBehaviour {
 				GUILayout.Label(l.Name);
 			}
 		}
+		if (eatsPlantSelection) {
+			GUILayout.Label(nameSelection + " would graze on grass.");
+		}
 		
 		if (GUILayout.Button("Create")) {
 			LayerManager.AddLayer(new Animal() {
