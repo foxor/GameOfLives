@@ -44,6 +44,7 @@ public class Challenge : MonoBehaviour {
 	
 	public void OnGUI() {
 		GUILayout.BeginArea(reportArea);
+		GUILayout.Label("Level " + (THRIVING_REQUIREMENT - 1) + ": ");
 		if (thriving < THRIVING_REQUIREMENT) {
 			GUILayout.Label(thriving + " species currently thriving, " + THRIVING_REQUIREMENT + " required");
 		}
