@@ -316,6 +316,10 @@ public class Animal : Layer {
 		}
 	}
 	
+	public int NumSurviving() {
+		return nextAnimalPositions.Count;
+	}
+	
 	public override byte MaxValue () {
 		return (byte)BreedingThreshold;
 	}
