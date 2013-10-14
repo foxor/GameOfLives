@@ -41,12 +41,6 @@ public class PredatorHeirarchy : MonoBehaviour {
 		foreach (Animal layer in sortedLayers) {
 			GUILayout.TextField(layer.Name);
 		}
-		GUILayout.TextField("h");
-		GUILayout.TextField("h");
-		GUILayout.TextField("h");
-		GUILayout.TextField("h");
-		GUILayout.TextField("h");
-		GUILayout.TextField("h");
 		
 		GUILayout.EndScrollView();
 			

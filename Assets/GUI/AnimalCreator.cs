@@ -137,7 +137,6 @@ public class AnimalCreator : MonoBehaviour {
 		colorSelection.b = GUILayout.HorizontalSlider(colorSelection.b, 0f, 1f);
 		colorSelection.a = 1f;
 		fillTexture(colorTex, colorSelection);
-		colorTex.Apply();
 		GUILayout.Box(colorTex);
 		
 		GUILayout.Label("Diet");
@@ -223,5 +222,6 @@ public class AnimalCreator : MonoBehaviour {
 				tex.SetPixel(x, y, color);
 			}
 		}
+		tex.Apply();
 	}
 }

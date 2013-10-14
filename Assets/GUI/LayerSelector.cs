@@ -6,7 +6,8 @@ public class LayerSelector : MonoBehaviour {
 	
 	public const int TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3;
 	protected const int PADDING = 5;
-	protected const int MENU_WIDTH = 100;
+	protected const int MENU_WIDTH = 200;
+	protected const int MIN_LAYER_BUTTON_HEIGHT = 30;
 	
 	protected int layerSelectorSelection;
 	protected int LayerSelectorSelection;
@@ -15,9 +16,15 @@ public class LayerSelector : MonoBehaviour {
 	protected Rect layerSelectorHoverRect;
 	
 	protected int lastScreenWidth, lastScreenHeight;
+	
+	protected Vector2 scrollViewVector;
+	
+	protected Texture2D colorTex;
 
 	void Start () {
 		determineLayerToolbarRect();
+		scrollViewVector = new Vector2();
+		colorTex = new Texture2D(30 - PADDING, 30 - PADDING);
 	}
 	
 	void Update () {
@@ -38,12 +45,23 @@ public class LayerSelector : MonoBehaviour {
 	}
 	
 	void windowFunction(int windowID) {
+		
 		Layer[] layers = LayerManager.Layers.ToArray();
+		
+		scrollViewVector = GUI.BeginScrollView(layerSelectorRect, scrollViewVector, new Rect(layerSelectorRect.x, layerSelectorRect.y, layerSelectorRect.width, layers.Length*(30 + PADDING) + 20));
+		
+		Rect position = new Rect();
 		for (int i = 0; i < layers.Length; i++) {
-			if (GUILayout.Button(LayerManager.Layers.ElementAt(i).Name)) {
+			position.Set (PADDING, i*30 + i*PADDING + 20, layerSelectorRect.width - 30 - PADDING*5, 30);
+			if (GUI.Button(position, LayerManager.Layers.ElementAt(i).Name)) {
 				toggleLayer(i);
 			}
+			position.Set (position.x + position.width + PADDING, position.y, 30, 30);
+			fillTexture(colorTex, new Color(layers[i].Color.r, layers[i].Color.g, layers[i].Color.b, 1f));
+			GUI.Box(position, colorTex);
 		}
+		
+		GUI.EndScrollView();
 	}
 	
 	private void resizeEvent() {
@@ -57,5 +75,14 @@ public class LayerSelector : MonoBehaviour {
 	
 	public void toggleLayer(int layerIndex) {
 		BoxManager.DisplayLayer ^= 1 << layerIndex;
+	}
+	
+	private static void fillTexture(Texture2D tex, Color color) {
+		for (int x = 0; x < tex.width; x++) {
+			for (int y = 0; y < tex.height; y++) {
+				tex.SetPixel(x, y, color);
+			}
+		}
+		tex.Apply ();
 	}
 }
