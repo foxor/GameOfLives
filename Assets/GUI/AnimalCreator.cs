@@ -177,7 +177,7 @@ public class AnimalCreator : MonoBehaviour {
 		combatAbilitySelection = GUILayout.HorizontalSlider(combatAbilitySelection, 0, 1);
 		combatAbilitySelection = (float)((int)(combatAbilitySelection*100 + 0.5f))/100;
 		
-		GUILayout.Label("Efficiency: " + combatAbilitySelection);
+		GUILayout.Label("Efficiency: " + efficiencySelection);
 		efficiencySelection = GUILayout.HorizontalSlider(efficiencySelection, 0, 1);
 		efficiencySelection = (float)((int)(efficiencySelection*100 + 0.5f))/100;
 		
