@@ -190,7 +190,7 @@ public class AnimalCreator : MonoBehaviour {
 	
 	protected void Randomize() {
 		nameSelection = ANIMAL_NAMES.OrderBy(x => Random.Range(0f, 1f)).First();
-		expanded = false;
+		
 		colorSelection = new Color(
 			Random.Range(0f, 1f),
 			Random.Range(0f, 1f),
@@ -273,6 +273,10 @@ public class AnimalCreator : MonoBehaviour {
 		GUI.skin.label.normal.textColor = Color.white;
 		
 		scrollViewVector = GUILayout.BeginScrollView(scrollViewVector, GUILayout.Width(windowRect.width), GUILayout.Height(windowRect.height));
+		
+		if (GUILayout.Button("Randomize!")) {
+			Randomize();
+		}
 		
 		nameSelection = GUILayout.TextField(nameSelection);
 		
