@@ -17,7 +17,7 @@ public class Challenge : MonoBehaviour {
 			Screen.width * 7f / 8f,
 			5f,
 			Screen.width / 8f,
-			80f
+			130f
 		);
 	}
 	
@@ -47,6 +47,9 @@ public class Challenge : MonoBehaviour {
 		GUILayout.Label("Level " + (DiversityThreshold - 1) + ": ");
 		if (thriving < DiversityThreshold) {
 			GUILayout.Label(thriving + " species currently thriving, " + DiversityThreshold + " required");
+			if (GUILayout.Button("Restart")) {
+				Application.LoadLevel(Application.loadedLevel);
+			}
 		}
 		else if (timer > 0) {
 			GUILayout.Label("Countdown: " + timer);
