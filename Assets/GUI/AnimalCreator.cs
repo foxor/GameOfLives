@@ -255,6 +255,7 @@ public class AnimalCreator : MonoBehaviour {
 					(walksSelection ? Animal.TERRESTRIAL_FLAG : 0) |
 					(swimsSelection ? Animal.AQUATIC_FLAG : 0),
 				Inefficiency = efficiencySelection,
+				Name = nameSelection,
 				TargetElevation = targetElevationSelection
 			});
 			
