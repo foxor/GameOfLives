@@ -117,7 +117,6 @@ public class AnimalCreator : MonoBehaviour {
 		else {
 			GUI.Box(expanderRect, "Expander");
 		}
-		
 	}
 	
 	void windowFunction(int windowID) {
