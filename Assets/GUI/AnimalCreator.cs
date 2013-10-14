@@ -30,7 +30,9 @@ public class AnimalCreator : MonoBehaviour {
 		"Eagle",
 		"Tuna",
 		"Octopus",
-		"Cthulhu"
+		"Cthulhu",
+		"Wolf",
+		"Rabbit"
 	};
 	
 	protected const float TIMEOUT = 1.3f;

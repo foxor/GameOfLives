@@ -3,51 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class Animal : Layer {
-	
-	protected static Animal bunny;
-	public static Animal Bunny {
-		get {
-			if (bunny == null) {
-				bunny = new Animal(){
-					Activity = 0.9f,
-					Aggression = 0.99f,
-					BreedingThreshold = 60,
-					CombatAbility = 0.05f,
-					Color = Color.white,
-					Digestion = HERBIVOR_FLAG,
-					Habitat = TERRESTRIAL_FLAG,
-					Name = "Bunny",
-					TargetElevation = 45,
-					BirthWeight = 0.8f,
-					Inefficiency = 0.6f
-				};
-			}
-			return bunny;
-		}
-	}
-	
-	protected static Animal wolf;
-	public static Animal Wolf {
-		get {
-			if (wolf == null) {
-				wolf = new Animal(){
-					Activity = 0.3f,
-					Aggression = 0.75f,
-					BreedingThreshold = 136,
-					CombatAbility = 0.6f,
-					Color = Color.black,
-					Digestion = CARNIVOR_FLAG,
-					Habitat = TERRESTRIAL_FLAG,
-					Name = "Wolf",
-					TargetElevation = 45,
-					BirthWeight = 0.6f,
-					Inefficiency = 0.8f
-				};
-			}
-			return wolf;
-		}
-	}
-	
 	public static Dictionary<int, Animal> LayerMapping;
 		
 	

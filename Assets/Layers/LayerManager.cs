@@ -47,7 +47,5 @@ public class LayerManager : MonoBehaviour {
 		AddLayer(Water.Singleton);
 		AddLayer(Grass.Singleton);
 		AddLayer(SunLight.Singleton);
-		AddLayer(Animal.Bunny);
-		AddLayer(Animal.Wolf);
 	}
 }
