@@ -364,6 +364,7 @@ public class AnimalCreator : MonoBehaviour {
 			
 			Randomize();
 			timer = TIMEOUT;
+			expanded = false;
 		}
 		
 		GUI.EndScrollView();
