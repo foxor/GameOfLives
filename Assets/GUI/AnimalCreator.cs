@@ -4,6 +4,37 @@ using System.Linq;
 
 public class AnimalCreator : MonoBehaviour {
 	
+	protected static string[] ANIMAL_NAMES = new string[] {
+		"Hippogryph",
+		"Basalisk",
+		"Grizzly bear",
+		"Fox",
+		"Hound",
+		"Pidgeon",
+		"Snake",
+		"Worm",
+		"Mouse",
+		"Hawk",
+		"Lion",
+		"Cheetah",
+		"Giraffe",
+		"Rhino",
+		"Tricerotops",
+		"Whale",
+		"Salmon",
+		"Oyster",
+		"Human",
+		"Elephant",
+		"Polar bear",
+		"Housecat",
+		"Eagle",
+		"Tuna",
+		"Octopus",
+		"Cthulhu"
+	};
+	
+	protected const float TIMEOUT = 1.3f;
+	
 	public static int PADDING = 5;
 	public Point windowSize, expanderSize;
 	
@@ -12,6 +43,7 @@ public class AnimalCreator : MonoBehaviour {
 	protected Rect testRect;
 	
 	private int lastScreenWidth, lastScreenHeight;
+	protected float timer;
 	
 	private bool expanded;
 	
@@ -42,6 +74,8 @@ public class AnimalCreator : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		Randomize();
+		
 		lastScreenWidth = Screen.width;
 		lastScreenHeight = Screen.height;
 		
@@ -56,33 +90,41 @@ public class AnimalCreator : MonoBehaviour {
 		
 		determineRectangles();
 		
-		expanded = false;
-		
-		nameSelection = "Name";
-		
-		colorSelection = new Color(255, 0, 0);
 		colorTex = new Texture2D((int)(windowRect.width*.75 + 0.5), 16);
-		
-		eatsMeatSelection = false;
-		eatsPlantSelection = true;
-		
-		walksSelection = true;
-		swimsSelection = false;
-		
-		targetElevationSelection = Water.SEA_LEVEL + (255 - Water.SEA_LEVEL)/2;
-		
-		breedingThresholdSelection = 70;
-		
-		activitySelection = 0.5f;
-		
-		aggressionSelection = 0.5f;
-		
-		birthRatioSelection = 0.5f;
-		
-		combatAbilitySelection = 0.5f;
-		
-		efficiencySelection = 0.5f;
 	}
+	
+	protected void Randomize() {
+		nameSelection = ANIMAL_NAMES.OrderBy(x => Random.Range(0f, 1f)).First();
+		expanded = false;
+		colorSelection = new Color(
+			Random.Range(0f, 1f),
+			Random.Range(0f, 1f),
+			Random.Range(0f, 1f),
+			1f
+		);
+		
+		eatsMeatSelection = Random.Range(0f, 1f) < 0.666f;
+		eatsPlantSelection = !eatsMeatSelection || (Random.Range(0f, 1f) < 0.5f);
+		
+		
+		targetElevationSelection = (byte)Random.Range(0, 255);
+		
+		swimsSelection = targetElevationSelection <= Water.SEA_LEVEL || Random.Range(0f, 1f) < 0.5f;
+		walksSelection = targetElevationSelection > Water.SEA_LEVEL || (Random.Range(0f, 1f) < 0.5f);
+		
+		breedingThresholdSelection = (byte)Random.Range(0, 255);
+		
+		activitySelection = Random.Range(0f, 1f);
+		
+		aggressionSelection = Random.Range(0f, 1f);
+		
+		birthRatioSelection = Random.Range(0f, 1f);
+		
+		combatAbilitySelection = Random.Range(0f, 1f);
+		
+		efficiencySelection = Random.Range(0f, 1f);
+	}
+	
 	
 	// Update is called once per frame
 	void Update () {
@@ -102,17 +144,17 @@ public class AnimalCreator : MonoBehaviour {
 				targetElevationSelection = Water.SEA_LEVEL;
 			}
 		}
-	
+		timer -= Time.deltaTime;
 	}
 	
 	void OnGUI() {
 		Vector3 mousePosition = Input.mousePosition;
 		mousePosition.y = Screen.height - mousePosition.y;
 		
-		if (expanderHoverRect.Contains(mousePosition)) {
+		if (expanderHoverRect.Contains(mousePosition) && timer <= 0) {
 			expanded = true;
 		}
-		else if (expanded && !windowHoverRect.Contains(mousePosition)) {
+		else if (expanded && !windowHoverRect.Contains(mousePosition) && timer <= 0) {
 			expanded = false;
 		}
 		
@@ -120,7 +162,9 @@ public class AnimalCreator : MonoBehaviour {
 			windowRect = GUI.Window(0, windowRect, windowFunction, "");			
 		}
 		else {
-			GUI.Box(expanderRect, "Expander");
+			GUI.enabled = timer <= 0;
+			GUI.Box(expanderRect, "Make a creature");
+			GUI.enabled = true;
 		}
 	}
 	
@@ -175,7 +219,7 @@ public class AnimalCreator : MonoBehaviour {
 		combatAbilitySelection = GUILayout.HorizontalSlider(combatAbilitySelection, 0, 1);
 		combatAbilitySelection = (float)((int)(combatAbilitySelection*100 + 0.5f))/100;
 		
-		GUILayout.Label("Efficiency: " + combatAbilitySelection);
+		GUILayout.Label("Efficiency: " + efficiencySelection);
 		efficiencySelection = GUILayout.HorizontalSlider(efficiencySelection, 0, 1);
 		efficiencySelection = (float)((int)(efficiencySelection*100 + 0.5f))/100;
 		
@@ -185,20 +229,20 @@ public class AnimalCreator : MonoBehaviour {
 				Aggression = aggressionSelection,
 				BirthWeight = birthRatioSelection,
 				BreedingThreshold = breedingThresholdSelection,
-				Carnivor = eatsMeatSelection,
 				CombatAbility = combatAbilitySelection,
 				Color = colorSelection,
-				Diet = 
-					LayerManager.Layers.Where(x => 
-						(x.GetType() == typeof(Animal) && eatsMeatSelection && ((Animal)x).Aggression < aggressionSelection) ||
-						(x.GetType() == typeof(Grass) && eatsPlantSelection)
-					).ToList(),
+				Digestion = 
+					(eatsMeatSelection ? Animal.CARNIVOR_FLAG : 0) |
+					(eatsPlantSelection ? Animal.HERBIVOR_FLAG : 0),
 				Habitat = 
 					(walksSelection ? Animal.TERRESTRIAL_FLAG : 0) |
 					(swimsSelection ? Animal.AQUATIC_FLAG : 0),
 				Inefficiency = efficiencySelection,
 				TargetElevation = targetElevationSelection
 			});
+			
+			Randomize();
+			timer = TIMEOUT;
 		}
 		
 		GUI.EndScrollView();

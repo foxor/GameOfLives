@@ -13,12 +13,11 @@ public class Animal : Layer {
 					Aggression = 0.99f,
 					BreedingThreshold = 60,
 					CombatAbility = 0.05f,
-					Diet = new List<Layer>(){Grass.Singleton},
 					Color = Color.white,
+					Digestion = HERBIVOR_FLAG,
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Bunny",
 					TargetElevation = 45,
-					Carnivor = false,
 					BirthWeight = 0.8f,
 					Inefficiency = 0.6f
 				};
@@ -36,12 +35,11 @@ public class Animal : Layer {
 					Aggression = 0.75f,
 					BreedingThreshold = 136,
 					CombatAbility = 0.6f,
-					Diet = new List<Layer>(){Bunny},
 					Color = Color.black,
+					Digestion = CARNIVOR_FLAG,
 					Habitat = TERRESTRIAL_FLAG,
 					Name = "Wolf",
 					TargetElevation = 45,
-					Carnivor = true,
 					BirthWeight = 0.6f,
 					Inefficiency = 0.8f
 				};
@@ -69,8 +67,7 @@ public class Animal : Layer {
 	
 	public int TargetElevation;
 	public int Habitat;
-	public List<Layer> Diet;
-	public bool Carnivor;
+	public int Digestion;
 	public float Activity;
 	public float Aggression;
 	public int BreedingThreshold;
@@ -78,8 +75,8 @@ public class Animal : Layer {
 	public float BirthWeight;
 	public float Inefficiency;
 	
-	protected int layer;
 	protected int extinctionCounter;
+	protected List<Layer> Diet;
 	
 	protected Dictionary<int, int> nextAnimalPositions;
 	
@@ -107,7 +104,11 @@ public class Animal : Layer {
 	}
 	
 	public bool canEatMeat() {
-		return Carnivor;
+		return (Digestion & CARNIVOR_FLAG) > 0;
+	}
+	
+	public bool canEatPlants() {
+		return (Digestion & HERBIVOR_FLAG) > 0;
 	}
 	
 	protected static int posClamp(int x, int y) {
@@ -135,7 +136,7 @@ public class Animal : Layer {
 				else if (!canWalk() && Data.Singleton[xPos, yPos, LayerManager.GetLayer<Water>()] < SWIM_DEPTH) {
 					continue;
 				}
-				if (!Data.boundsOk(xPos, yPos, layer)) {
+				if (!Data.boundsOk(xPos, yPos, LAYER)) {
 					continue;
 				}
 				if (xPos == x && yPos == y) {
@@ -271,7 +272,18 @@ public class Animal : Layer {
 		nextAnimalPositions[posClamp(x, y)] = 255;
 	}
 	
+	protected void UpdateDiet() {
+		Diet = LayerManager.Layers.Where(x => 
+				(x.GetType() == typeof(Animal) && canEatMeat() && 
+					((Animal)x).CombatAbility * ((Animal)x).BreedingThreshold <= 
+					BreedingThreshold * CombatAbility &&
+					((Animal)x).LAYER != LAYER) ||
+				(x.GetType() == typeof(Grass) && canEatPlants())
+			).ToList();
+	}
+	
 	public override void PerFrame() {
+		UpdateDiet();
 		if (nextAnimalPositions.Count == 0 && --extinctionCounter <= 0) {
 			AddAnimal(
 				Random.Range(0, Data.Width),
