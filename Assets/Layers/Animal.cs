@@ -81,8 +81,6 @@ public class Animal : Layer {
 	
 	public Animal() {
 		nextAnimalPositions = new Dictionary<int, int>();
-		
-		flowField = FlowField.Generate((byte)TargetElevation);
 	}
 	
 	public override void OnStartup (int layer) {
@@ -92,6 +90,8 @@ public class Animal : Layer {
 			LayerMapping = new Dictionary<int, Animal>();
 		}
 		LayerMapping[layer] = this;
+		
+		flowField = FlowField.Generate((byte)TargetElevation);
 	}
 	
 	public bool canSwim() {
@@ -168,7 +168,9 @@ public class Animal : Layer {
 			return false;
 		}
 		if (flowField[posClamp(x, y)] > 0) {
-			//TODO
+			delta[0] = flowField[posClamp(x, y)] % 3 - 1;
+			delta[1] = flowField[posClamp(x, y)] / 3 - 1;
+			return true;
 		}
 		int direction = shuffleSpace.OrderBy(key => Random.Range(0f, 1f)).First();
 		delta[0] = (direction % 3) - 1;
