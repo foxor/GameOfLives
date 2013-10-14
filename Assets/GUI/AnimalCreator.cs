@@ -223,6 +223,18 @@ public class AnimalCreator : MonoBehaviour {
 		efficiencySelection = GUILayout.HorizontalSlider(efficiencySelection, 0, 1);
 		efficiencySelection = (float)((int)(efficiencySelection*100 + 0.5f))/100;
 		
+		if (eatsMeatSelection) {
+			GUILayout.Label(nameSelection + " would prey on:");
+			foreach (Layer l in LayerManager.Layers.Where(x => 
+					(x.GetType() == typeof(Animal) &&
+						((Animal)x).CombatAbility * ((Animal)x).BreedingThreshold <= 
+						breedingThresholdSelection * combatAbilitySelection)
+				).ToList()
+			) {
+				GUILayout.Label(l.Name);
+			}
+		}
+		
 		if (GUILayout.Button("Create")) {
 			LayerManager.AddLayer(new Animal() {
 				Activity = activitySelection,
