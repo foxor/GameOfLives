@@ -73,4 +73,8 @@ public class Water : Layer {
 			Data.Singleton[x, y, LAYER] = (byte)(Data.Singleton[x, y, LAYER] + 1);
 		}
 	}
+	
+	public override byte MaxValue () {
+		return SEA_LEVEL;
+	}
 }

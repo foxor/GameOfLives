@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class FlowField {
-	protected const byte ELEVATION_CLAMP = 20;
+	protected const byte ELEVATION_CLAMP = 50;
 	
 	protected static IEnumerable<int> neighborPositions(int pos) {
 		int x = pos % Data.Width;
