@@ -33,6 +33,8 @@ public class AnimalCreator : MonoBehaviour {
 		"Cthulhu"
 	};
 	
+	protected const float TIMEOUT = 1.3f;
+	
 	public static int PADDING = 5;
 	public Point windowSize, expanderSize;
 	
@@ -41,6 +43,7 @@ public class AnimalCreator : MonoBehaviour {
 	protected Rect testRect;
 	
 	private int lastScreenWidth, lastScreenHeight;
+	protected float timer;
 	
 	private bool expanded;
 	
@@ -141,17 +144,17 @@ public class AnimalCreator : MonoBehaviour {
 				targetElevationSelection = Water.SEA_LEVEL;
 			}
 		}
-	
+		timer -= Time.deltaTime;
 	}
 	
 	void OnGUI() {
 		Vector3 mousePosition = Input.mousePosition;
 		mousePosition.y = Screen.height - mousePosition.y;
 		
-		if (expanderHoverRect.Contains(mousePosition)) {
+		if (expanderHoverRect.Contains(mousePosition) && timer <= 0) {
 			expanded = true;
 		}
-		else if (expanded && !windowHoverRect.Contains(mousePosition)) {
+		else if (expanded && !windowHoverRect.Contains(mousePosition) && timer <= 0) {
 			expanded = false;
 		}
 		
@@ -159,7 +162,9 @@ public class AnimalCreator : MonoBehaviour {
 			windowRect = GUI.Window(0, windowRect, windowFunction, "");			
 		}
 		else {
+			GUI.enabled = timer <= 0;
 			GUI.Box(expanderRect, "Make a creature");
+			GUI.enabled = true;
 		}
 		
 	}
@@ -239,6 +244,7 @@ public class AnimalCreator : MonoBehaviour {
 			});
 			
 			Randomize();
+			timer = TIMEOUT;
 		}
 		
 		GUI.EndScrollView();
