@@ -14,6 +14,8 @@ public class AnimalCreator : MonoBehaviour {
 	
 	private bool expanded;
 	
+	private Vector2 scrollViewVector;
+	
 	private string nameSelection;
 	
 	protected Color colorSelection;
@@ -46,9 +48,7 @@ public class AnimalCreator : MonoBehaviour {
 		expanderRect = new Rect();		
 		expanderHoverRect = new Rect();
 		
-		testRect = new Rect(0, 0, 10, 10);
-		
-		windowSize = new Point(200, 600);
+		windowSize = new Point(200, 300);
 		expanderSize = new Point(100, 30);
 		
 		determineRectangles();
@@ -58,7 +58,7 @@ public class AnimalCreator : MonoBehaviour {
 		nameSelection = "Name";
 		
 		colorSelection = new Color(255, 0, 0);
-		colorTex = new Texture2D(1, 1);
+		colorTex = new Texture2D((int)(windowRect.width*.75 + 0.5), 16);
 		
 		eatsMeatSelection = false;
 		eatsPlantSelection = true;
@@ -112,7 +112,7 @@ public class AnimalCreator : MonoBehaviour {
 		}
 		
 		if (expanded) {
-			windowRect = GUI.Window(0, windowRect, windowFunction, "Window");			
+			windowRect = GUI.Window(0, windowRect, windowFunction, "");			
 		}
 		else {
 			GUI.Box(expanderRect, "Expander");
@@ -123,6 +123,8 @@ public class AnimalCreator : MonoBehaviour {
 	void windowFunction(int windowID) {
 		GUI.skin.label.normal.textColor = Color.white;
 		
+		scrollViewVector = GUILayout.BeginScrollView(scrollViewVector, GUILayout.Width(windowRect.width), GUILayout.Height(windowRect.height));
+		
 		nameSelection = GUILayout.TextField(nameSelection);
 		
 		GUILayout.Label("Color");
@@ -130,11 +132,9 @@ public class AnimalCreator : MonoBehaviour {
 		colorSelection.g = GUILayout.HorizontalSlider(colorSelection.g, 0f, 1f);
 		colorSelection.b = GUILayout.HorizontalSlider(colorSelection.b, 0f, 1f);
 		colorSelection.a = 1f;
-		colorTex.SetPixel(0, 0, colorSelection);
+		fillTexture(colorTex, colorSelection);
 		colorTex.Apply();
-		GUI.skin.box.normal.background = colorTex;
-		GUILayout.Box("");
-		GUI.skin.box.normal.background = null;
+		GUILayout.Box(colorTex);
 		
 		GUILayout.Label("Diet");
 		eatsPlantSelection = GUILayout.Toggle(eatsPlantSelection, "Eats Plants");
@@ -171,6 +171,12 @@ public class AnimalCreator : MonoBehaviour {
 		GUILayout.Label("Combat Ability: " + combatAbilitySelection);
 		combatAbilitySelection = GUILayout.HorizontalSlider(combatAbilitySelection, 0, 1);
 		combatAbilitySelection = (float)((int)(combatAbilitySelection*100 + 0.5f))/100;
+		
+		if (GUILayout.Button("Create")) {
+			
+		}
+		
+		GUI.EndScrollView();
 	}
 	
 	private void resizeEvent() {
@@ -183,5 +189,13 @@ public class AnimalCreator : MonoBehaviour {
 		
 		windowRect.Set(Screen.width - windowSize.x - PADDING, Screen.height - windowSize.y - PADDING, windowSize.x, windowSize.y);
 		windowHoverRect.Set(Screen.width - windowSize.x - 2*PADDING, Screen.height - windowSize.y - 2*PADDING, windowSize.x + PADDING, windowSize.y + PADDING);
+	}
+	
+	private static void fillTexture(Texture2D tex, Color color) {
+		for (int x = 0; x < tex.width; x++) {
+			for (int y = 0; y < tex.height; y++) {
+				tex.SetPixel(x, y, color);
+			}
+		}
 	}
 }
