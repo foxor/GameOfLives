@@ -120,7 +120,7 @@ public class AnimalCreator : MonoBehaviour {
 			windowRect = GUI.Window(0, windowRect, windowFunction, "");			
 		}
 		else {
-			GUI.Box(expanderRect, "Expander");
+			GUI.Box(expanderRect, "Make a creature");
 		}
 		
 	}
