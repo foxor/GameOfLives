@@ -34,7 +34,6 @@ public class Challenge : MonoBehaviour {
 		if (thriving >= DiversityThreshold) {
 			if (--timer <= 0) {
 				hasWon = true;
-				Debug.Log("Amazing!");
 			}
 		}
 		else {

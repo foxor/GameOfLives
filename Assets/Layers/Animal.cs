@@ -18,7 +18,7 @@ public class Animal : Layer {
 	protected const float STATIONARY_ENERGY = 1f;
 	protected const int EXTINCTION_PENALTY = 10;
 	
-	protected static byte[] flowField;
+	protected byte[] flowField;
 	
 	public int TargetElevation;
 	public int Habitat;
@@ -200,6 +200,9 @@ public class Animal : Layer {
 	public override byte Process(byte val, int x, int y) {
 		int pos = posClamp(x, y);
 		if (!canSwim() && Data.Singleton[x, y, LayerManager.GetLayer<Water>()] > SWIM_DEPTH) {
+			return 0;
+		}
+		if (!canWalk() && Data.Singleton[x, y, LayerManager.GetLayer<Water>()] < SWIM_DEPTH) {
 			return 0;
 		}
 		if (nextAnimalPositions.ContainsKey(pos)) {
